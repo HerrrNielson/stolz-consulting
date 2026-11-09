@@ -361,7 +361,6 @@ h1, h2, h3, h4, p, blockquote, figure { margin: 0; }
   font-size: clamp(21px, 2vw, 26px);
   line-height: 1.3;
   color: var(--text);
-  transition: padding-left .25s, color .25s;
 }
 .service-list li::before {
   content: counter(svc, decimal-leading-zero);
@@ -371,7 +370,6 @@ h1, h2, h3, h4, p, blockquote, figure { margin: 0; }
   letter-spacing: 0.08em;
   color: var(--accent-deep);
 }
-.service-list li:hover { padding-left: 8px; color: var(--accent-deep); }
 
 /* ---------- Split (Bild + Text) ---------- */
 
@@ -414,11 +412,7 @@ h1, h2, h3, h4, p, blockquote, figure { margin: 0; }
   max-height: 64px;
   width: auto;
   object-fit: contain;
-  filter: grayscale(1);
-  opacity: .75;
-  transition: filter .3s, opacity .3s;
 }
-.logo-grid li:hover img { filter: none; opacity: 1; }
 .logo-grid .logo-text {
   font-family: var(--font-serif);
   font-size: 16px;
