@@ -235,13 +235,22 @@
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     if (!form.checkValidity()) {
-      form.reportValidity();
+      /* Klare Meldung statt nur Browser-Sprechblase; Fokus auf das erste fehlerhafte Feld */
+      show("error", form.getAttribute("data-msg-invalid"));
+      var bad = form.querySelector(":invalid");
+      if (bad) bad.focus();
       return;
     }
     var data = new FormData(form);
-    if (data.get("website")) return; /* Spam-Honeypot */
+    if (data.get("website")) { /* Spam-Honeypot: Bot sieht scheinbaren Erfolg, es wird nichts gesendet */
+      form.reset();
+      show("ok", form.getAttribute("data-msg-ok"));
+      return;
+    }
 
     button.disabled = true;
+    status.className = "form__status";
+    status.textContent = "";
     fetch(form.getAttribute("action"), {
       method: "POST",
       body: data,
@@ -249,13 +258,16 @@
     })
       .then(function (res) {
         var type = res.headers.get("content-type") || "";
-        if (!res.ok || type.indexOf("application/json") === -1) throw new Error("no-backend");
-        return res.json();
+        /* Kein JSON = kein PHP-Backend vorhanden (z. B. statischer Webspace) -> E-Mail-Fallback */
+        if (type.indexOf("application/json") === -1) throw new Error("no-backend");
+        return res.json().then(function (json) { return { res: res, json: json }; });
       })
-      .then(function (json) {
-        if (json && json.ok) {
+      .then(function (r) {
+        if (r.res.ok && r.json && r.json.ok) {
           form.reset();
           show("ok", form.getAttribute("data-msg-ok"));
+        } else if (r.res.status === 422) {
+          show("error", form.getAttribute("data-msg-invalid"));
         } else {
           show("error", form.getAttribute("data-msg-error"));
         }

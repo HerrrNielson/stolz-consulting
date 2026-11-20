@@ -12,9 +12,9 @@ Wo liegt was?
   build.py            Seitenaufbau (HTML-Templates), Layout, Sitemap
   assets/             CSS, JS, Schriften, Bilder (HTML-Dateien nie direkt bearbeiten)
 
-Erweiterungspunkte (siehe Markierungen "ERWEITERUNG" unten):
-  * Leistungsseite /leistungen/: slugs["leistungen"] in jeder i18n-Datei ergänzen,
-    page_leistungen() schreiben, in PAGES eintragen und in nav aufnehmen.
+Erweiterungspunkte (siehe Markierungen "ERWEITERUNG" / "TODO" unten):
+  * Fallbeispiele und Kundenstimmen: CASE_STUDIES / TESTIMONIALS befüllen (siehe unten) –
+    bis dahin wird nichts davon ausgegeben.
   * Popup-Modul (Problem-Analyse): Markup über EXTRA_BODY, Skript über EXTRA_SCRIPTS
     (z. B. assets/js/popup.js), Styles in assets/css/popup.css via EXTRA_STYLES.
 
@@ -68,6 +68,28 @@ REFERENCES = [
     ("ZAT GmbH", None),
 ]
 
+# Gruppierung der Referenzen – nur, wo sie sich eindeutig aus dem Namen ergibt
+# (Hochschule/Universität/FH/Ausbildungsstätte/BFI/WIFI = Bildung; Kurzentrum, Dienstleistungs-AG
+# = Dienstleistung/Gesundheit). Alles andere bleibt unter "weitere" (keine Branchen-Vermutungen).
+REF_GROUP_OF = {
+    "BFI Steiermark": "bildung", "FH Campus 02": "bildung", "FH Hamburg": "bildung",
+    "Land- und forstwirtschaftliche Ausbildungsstätte Steiermark": "bildung",
+    "Pädagogische Hochschule Steiermark": "bildung", "Universität Graz": "bildung", "WIFI Steiermark": "bildung",
+    "Kurzentrum Althofen GmbH": "dienst", "Saubermacher Dienstleistungs AG": "dienst",
+}
+REF_GROUP_ORDER = ["bildung", "dienst", "weitere"]
+
+# TODO(Inhalt): Fallbeispiele und Kundenstimmen – Struktur ist vorbereitet, aber absichtlich LEER.
+# Es gibt derzeit keine freigegebenen Inhalte; solange die Listen leer sind, wird auf der Live-Seite
+# nichts ausgegeben (kein Fake-Content). Befüllen nur mit echten, von den Kund/innen freigegebenen Inhalten:
+#   CASE_STUDIES.append({"title": {"de": "...", "en": "...", "fr": "...", "ru": "..."},
+#                        "text":  {"de": "...", ...},               # Ausgangslage / Vorgehen / Ergebnis
+#                        "meta":  {"de": "Branche · Thema", ...}})
+#   TESTIMONIALS.append({"quote": {"de": "...", ...}, "author": "Name, Funktion, Unternehmen"})
+CASE_STUDIES = []
+TESTIMONIALS = []
+
+REQ = '<span class="req" aria-hidden="true">*</span>'
 ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
 ICON_PIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>'
 ICON_PHONE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>'
@@ -178,13 +200,14 @@ def marquee(key, lang, label, pause_label):
 def cta_block(key, lang):
     D = LANGS[lang]
     c = D["cta"]
+    note = f'<p class="cta__note">{esc(c["text"])}</p>' if c.get("text") else ""
     return f"""
     <section class="section section--cta">
       <div class="container">
         <div class="cta reveal">
           <div class="cta__text">
             <p class="eyebrow">{esc(c['eyebrow'])}</p>
-            <h2 class="h2">{em(c['h2'])}</h2>
+            <h2 class="h2">{em(c['h2'])}</h2>{note}
           </div>
           <a class="btn btn--primary" href="{rel(key, lang, 'kontakt')}"><span>{esc(c['btn'])}</span>{ARROW}</a>
         </div>
@@ -212,11 +235,21 @@ def page_home(lang):
     t, u = D["home"], D["ui"]
     a = lambda p: asset(k, lang, p)
     L = lambda to: rel(k, lang, to)
+    fields = D["leistungen"]["fields"]
+    n_refs = len(REFERENCES)
+
+    def stat_value(v):
+        return str(n_refs) if v == "{refs}" else str(len(fields)) if v == "{svc}" else v
+
     stats = "".join(
-        f'<li class="reveal"><span class="stats__num"><span data-count="{v}" data-from="{f}">{v}</span></span>'
+        f'<li class="reveal"><span class="stats__num"><span data-count="{stat_value(v)}" data-from="{f}">{stat_value(v)}</span></span>'
         f'<span class="stats__label">{esc(label)}</span></li>' for v, f, label in t["stats"])
-    svc = "".join(f'<li class="reveal">{esc(x)}</li>' for x in t["svc"])
-    prose = "".join(f"<p>{esc(x)}</p>" for x in t["ap_p"])
+    svc = "".join(
+        f'<li class="reveal"><a class="svc-link" href="{L("leistungen")}#{f["id"]}">'
+        f'<span class="svc-link__t">{esc(f["title"])}</span><span class="svc-link__d">{esc(f["teaser"])}</span>{ARROW}</a></li>'
+        for f in fields)
+    prose = "".join(f"<p>{esc(x)}</p>" for x in t["pr_p"])
+    ref_lead = esc(t["ref_lead"].replace("{n}", str(n_refs)))
     return f"""
     <section class="hero">
       <div class="hero__bg" aria-hidden="true"><span class="hero__glow" data-parallax="0.12"></span><span class="hero__glow hero__glow--2" data-parallax="-0.06"></span></div>
@@ -225,9 +258,11 @@ def page_home(lang):
           <p class="eyebrow reveal">{esc(t['eyebrow'])}</p>
           <p class="hero__name reveal">Mag. Dr. Sabine Stolz, MSc</p>
           <h1 class="h1 h1--hero reveal">{em(t['h1'])}</h1>
-          <blockquote class="hero__quote reveal">{esc(t['quote'])}</blockquote>
           <div class="hero__text reveal">
             <p class="intro">{esc(t['intro'])}</p>
+          </div>
+          <blockquote class="hero__quote reveal">{esc(t['quote'])}</blockquote>
+          <div class="hero__text reveal">
             <p>{esc(t['text'])}</p>
           </div>
           <div class="hero__actions reveal">
@@ -258,24 +293,25 @@ def page_home(lang):
         <div class="reveal">
           <p class="eyebrow">{esc(t['svc_eyebrow'])}</p>
           <h2 class="h2">{em(t['svc_h2'])}</h2>
+          <a class="link-arrow svc-all" href="{L('leistungen')}"><span>{esc(t['svc_all'])}</span>{ARROW}</a>
         </div>
         <ul class="service-list" data-stagger>{svc}</ul>
       </div>
     </section>
 
     <section class="section section--cream">
-      <div class="container split">
-        <div class="split__media reveal">
+      <div class="container shortprofile">
+        <div class="shortprofile__media reveal">
           <div class="frame">
             <picture>
-              <source type="image/webp" srcset="{a('img/city.webp')}">
-              <img src="{a('img/city.jpg')}" alt="{esc(t['city_alt'])}" width="999" height="520" loading="lazy" decoding="async">
+              <source type="image/webp" srcset="{a('img/portrait.webp')}">
+              <img src="{a('img/portrait.jpg')}" alt="{esc(t['portrait_alt'])}" width="313" height="474" loading="lazy" decoding="async">
             </picture>
           </div>
         </div>
         <div class="split__text" data-stagger>
-          <p class="eyebrow reveal">{esc(t['ap_eyebrow'])}</p>
-          <h2 class="h2 reveal">{esc(t['ap_h2'])}</h2>
+          <p class="eyebrow reveal">{esc(t['pr_eyebrow'])}</p>
+          <h2 class="h2 reveal">{esc(t['pr_h2'])}</h2>
           <div class="prose reveal">{prose}</div>
           <a class="link-arrow reveal" href="{L('profil')}"><span>{esc(t['ap_link'])}</span>{ARROW}</a>
         </div>
@@ -288,6 +324,7 @@ def page_home(lang):
           <div>
             <p class="eyebrow">{esc(t['ref_eyebrow'])}</p>
             <h2 class="h2">{esc(t['ref_h2'])}</h2>
+            <p class="section__lead">{ref_lead}</p>
           </div>
           <a class="link-arrow" href="{L('referenzen')}"><span>{esc(t['ref_all'])}</span>{ARROW}</a>
         </div>
@@ -297,13 +334,79 @@ def page_home(lang):
 {cta_block(k, lang)}"""
 
 
+def page_leistungen(lang):
+    k, D = "leistungen", LANGS[lang]
+    t = D["leistungen"]
+    chips = "".join(f'<li><a href="#{f["id"]}">{esc(f["title"])}</a></li>' for f in t["fields"])
+    blocks = []
+    for i, f in enumerate(t["fields"], 1):
+        tags = ""
+        if f.get("tags"):
+            tags = (f'<p class="svc__tags-k">{esc(f["tags_k"])}</p>'
+                    '<ul class="tags">' + "".join(f"<li>{esc(x)}</li>" for x in f["tags"]) + "</ul>")
+        when = "".join(f"<li>{esc(x)}</li>" for x in f["when"])
+        blocks.append(f"""
+        <article class="svc reveal" id="{f['id']}" aria-labelledby="{f['id']}-h">
+          <div class="svc__main">
+            <p class="svc__num" aria-hidden="true">{i:02d}</p>
+            <h3 class="h3" id="{f['id']}-h">{esc(f['title'])}</h3>
+            <p class="svc__benefit">{esc(f['benefit'])}</p>
+            {tags}
+          </div>
+          <div class="svc__when">
+            <h4>{esc(t['when_k'])}</h4>
+            <ul class="check-list">{when}</ul>
+          </div>
+        </article>""")
+    steps = "".join(
+        f'<li class="reveal"><span class="step__num" aria-hidden="true">{i}</span><h3>{esc(h)}</h3><p>{esc(p)}</p></li>'
+        for i, (h, p) in enumerate(t["steps"], 1))
+    return page_hero(t) + f"""
+
+    <section class="section section--soft section--tight">
+      <div class="container">
+        <div class="note reveal">
+          <p class="eyebrow">{esc(t['form_k'])}</p>
+          <h2 class="h3">{esc(t['form_h'])}</h2>
+          <p>{esc(t['form_p'])}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section__head reveal">
+          <p class="eyebrow">{esc(t['fields_eyebrow'])}</p>
+          <h2 class="h2">{em(t['fields_h2'])}</h2>
+          <ul class="chips" aria-label="{esc(t['fields_eyebrow'])}">{chips}</ul>
+        </div>
+        <div class="svc-list">{"".join(blocks)}
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--cream">
+      <div class="container">
+        <div class="section__head reveal">
+          <p class="eyebrow">{esc(t['process_eyebrow'])}</p>
+          <h2 class="h2">{em(t['process_h2'])}</h2>
+        </div>
+        <ol class="steps" data-stagger>{steps}</ol>
+      </div>
+    </section>
+{cta_block(k, lang)}"""
+
+
 def page_profil(lang):
     k, D = "profil", LANGS[lang]
     t = D["profil"]
     a = lambda p: asset(k, lang, p)
     edu = "".join(f'<li class="reveal"><strong>{esc(x)}</strong><span>{esc(y)}</span></li>' for x, y in t["edu"])
-    car = "".join(f'<li class="reveal{" is-current" if c else ""}"><strong>{esc(x)}</strong><span>{esc(y)}</span></li>'
-                  for x, y, c in t["career"])
+    car = "".join(
+        f'<li class="reveal{" is-current" if cur else ""}">'
+        + (f'<span class="tl__period">{esc(period)}</span>' if period else "")
+        + f'<strong>{esc(x)}</strong><span>{esc(y)}</span></li>'
+        for x, y, period, cur in t["career"])
     tags = "".join(f"<li>{esc(x)}</li>" for x in t["tags"])
     chk = "".join(f'<li class="reveal">{esc(x)}</li>' for x in t["checks"])
     return page_hero(t) + f"""
@@ -341,7 +444,9 @@ def page_profil(lang):
           <div class="profile__block">
             <p class="eyebrow reveal">03</p>
             <h2 class="h3 reveal">{esc(t['h_extra'])}</h2>
+            <p class="svc__tags-k reveal">{esc(t['tags_k'])}</p>
             <ul class="tags reveal">{tags}</ul>
+            <p class="svc__tags-k reveal">{esc(t['checks_k'])}</p>
             <ul class="check-list" data-stagger>{chk}</ul>
           </div>
         </div>
@@ -350,13 +455,46 @@ def page_profil(lang):
 {cta_block(k, lang)}"""
 
 
+def render_case_studies(lang, t):
+    """Fallbeispiele und Kundenstimmen – gibt NUR etwas aus, wenn CASE_STUDIES / TESTIMONIALS befüllt sind."""
+    out = ""
+    if CASE_STUDIES:
+        cards = "".join(
+            f'<li class="case reveal"><p class="label">{esc(c["meta"][lang])}</p><h3>{esc(c["title"][lang])}</h3>'
+            f'<p>{esc(c["text"][lang])}</p></li>' for c in CASE_STUDIES)
+        out += f"""
+    <section class="section section--soft">
+      <div class="container">
+        <div class="section__head reveal"><p class="eyebrow">{esc(t['cases_eyebrow'])}</p><h2 class="h2">{esc(t['cases_h2'])}</h2></div>
+        <ul class="case-list" data-stagger>{cards}</ul>
+      </div>
+    </section>"""
+    if TESTIMONIALS:
+        quotes = "".join(
+            f'<li class="quote-card reveal"><blockquote>{esc(q["quote"][lang])}</blockquote><cite>{esc(q["author"])}</cite></li>'
+            for q in TESTIMONIALS)
+        out += f"""
+    <section class="section">
+      <div class="container">
+        <div class="section__head reveal"><p class="eyebrow">{esc(t['quotes_eyebrow'])}</p><h2 class="h2">{esc(t['quotes_h2'])}</h2></div>
+        <ul class="quote-list" data-stagger>{quotes}</ul>
+      </div>
+    </section>"""
+    return out
+
+
 def page_referenzen(lang):
     k, D = "referenzen", LANGS[lang]
     t = D["referenzen"]
     cards = "".join(
         f'<li class="reveal"><span class="label">{esc(t["label"])}</span><h3>{esc(h)}</h3><p>{esc(p)}</p></li>'
         for h, p in t["items"])
-    refs = REFERENCES + [(t["more"], None)]
+    groups = []
+    for g in REF_GROUP_ORDER:
+        items = [r for r in REFERENCES if REF_GROUP_OF.get(r[0], "weitere") == g]
+        if g == "weitere":
+            items = items + [(t["more"], None)]
+        groups.append(f'<div class="ref-group"><h3 class="ref-group__h reveal">{esc(t["groups"][g])}</h3>{logo_grid(k, lang, items)}</div>')
     return page_hero(t) + f"""
 
     <section class="section section--soft">
@@ -371,9 +509,10 @@ def page_referenzen(lang):
           <p class="eyebrow">{esc(t['e2'])}</p>
           <h2 class="h2">{esc(t['h2'])}</h2>
         </div>
-        {logo_grid(k, lang, refs)}
+        {"".join(groups)}
       </div>
     </section>
+{render_case_studies(lang, t)}
 {cta_block(k, lang)}"""
 
 
@@ -390,38 +529,40 @@ def page_kontakt(lang):
       <div class="container contact-grid">
         <form class="form reveal" action="{action}" method="post" novalidate data-contact-form
               data-mailto="{c['email']}" data-subject="{esc(t['subject'])}"
-              data-msg-ok="{esc(t['ok'])}" data-msg-error="{esc(t['err'])}" data-msg-mailto="{esc(t['mailto'])}">
+              data-msg-ok="{esc(t['ok'])}" data-msg-error="{esc(t['err'])}" data-msg-mailto="{esc(t['mailto'])}"
+              data-msg-invalid="{esc(t['invalid'])}">
           <input type="hidden" name="lang" value="{lang}">
+          <p class="form__note">{esc(t['req_note'])}</p>
           <div class="form__row">
             <div class="field">
-              <label for="f-name">{esc(t['name'])}</label>
-              <input id="f-name" name="name" type="text" autocomplete="name" required>
+              <label for="f-name">{esc(t['name'])} {REQ}</label>
+              <input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required aria-required="true">
             </div>
             <div class="field">
               <label for="f-company">{esc(t['company'])} <span class="opt">{esc(t['opt'])}</span></label>
-              <input id="f-company" name="company" type="text" autocomplete="organization">
+              <input id="f-company" name="company" type="text" autocomplete="organization" maxlength="160">
             </div>
           </div>
           <div class="form__row">
             <div class="field">
-              <label for="f-email">{esc(t['email'])}</label>
-              <input id="f-email" name="email" type="email" autocomplete="email" required>
+              <label for="f-email">{esc(t['email'])} {REQ}</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" maxlength="160" required aria-required="true">
             </div>
             <div class="field">
               <label for="f-phone">{esc(t['phone'])} <span class="opt">{esc(t['opt'])}</span></label>
-              <input id="f-phone" name="phone" type="tel" autocomplete="tel">
+              <input id="f-phone" name="phone" type="tel" autocomplete="tel" maxlength="60">
             </div>
           </div>
           <div class="field">
-            <label for="f-message">{esc(t['msg'])}</label>
-            <textarea id="f-message" name="message" rows="6" required></textarea>
+            <label for="f-message">{esc(t['msg'])} {REQ}</label>
+            <textarea id="f-message" name="message" rows="6" maxlength="5000" required aria-required="true"></textarea>
           </div>
           <div class="hp" aria-hidden="true">
             <label for="f-website">Website</label>
             <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
           </div>
           <label class="check">
-            <input type="checkbox" name="consent" value="1" required>
+            <input type="checkbox" name="consent" value="1" required aria-required="true">
             <span>{consent}</span>
           </label>
           <button class="btn btn--primary" type="submit"><span>{esc(t['send'])}</span>{ARROW}</button>
@@ -441,16 +582,27 @@ def page_kontakt(lang):
     </section>"""
 
 
+TODO_RE = re.compile(r"\[BITTE ERGÄNZEN[^\]]*\]")
+
+
+def legal_text(text):
+    """Escaped Text; [BITTE ERGÄNZEN …] wird als sichtbare Markierung (mark.todo) ausgegeben."""
+    return TODO_RE.sub(lambda m: f'<mark class="todo">{m.group(0)}</mark>', esc(text))
+
+
 def legal_sections(sections):
     out = []
     for h, paras in sections:
-        out.append(f"<h2>{esc(h)}</h2>" + "".join(f"<p>{esc(p)}</p>" for p in paras))
+        out.append(f"<h2>{esc(h)}</h2>" + "".join(f"<p>{legal_text(p)}</p>" for p in paras))
     return "\n        ".join(out)
 
 
 def page_impressum(lang):
+    # RECHTLICH: von Fachperson zu prüfen (ECG § 5, GewO § 63, MedienG § 25). Fehlende Angaben stehen als
+    # [BITTE ERGÄNZEN] in i18n/<sprache>.py (todo_rows, sections) und werden sichtbar markiert.
     D = LANGS[lang]
     t, u, c = D["impressum"], D["ui"], CONTACT
+    todo = "".join(f'<dt>{esc(lbl)}</dt><dd>{legal_text("[BITTE ERGÄNZEN]")}</dd>' for lbl in t["todo_rows"])
     return page_hero(t, lead=False) + f"""
     <section class="section">
       <div class="container container--narrow legal">
@@ -460,6 +612,8 @@ def page_impressum(lang):
           <dt>{esc(t['k_phone'])}</dt><dd><a href="{c['phone_href']}">{esc(u['phone_display'])}</a></dd>
           <dt>{esc(t['k_email'])}</dt><dd><a href="mailto:{c['email']}">{c['email']}</a></dd>
           <dt>{esc(t['k_web'])}</dt><dd><a href="{DOMAIN}/">{DOMAIN}/</a></dd>
+          <dt>{esc(t['k_owner'])}</dt><dd>{esc(t['v_owner'])}</dd>
+          {todo}
         </dl>
         {legal_sections(t['sections'])}
       </div>
@@ -467,6 +621,8 @@ def page_impressum(lang):
 
 
 def page_datenschutz(lang):
+    # RECHTLICH: von Fachperson zu prüfen (DSGVO Art. 13/14, DSG, TKG 2021 § 165). Die Abschnitte zu Kontaktformular
+    # und lokal gehosteten Schriften beschreiben den technischen Ist-Stand; der Hosting-Anbieter fehlt noch.
     D = LANGS[lang]
     t, u, c = D["datenschutz"], D["ui"], CONTACT
     return page_hero(t, lead=False) + f"""
@@ -483,10 +639,10 @@ def page_datenschutz(lang):
     </section>"""
 
 
-# ERWEITERUNG: weitere Seiten (z. B. "leistungen") hier eintragen – und in jeder
-# i18n-Datei unter slugs/meta ergänzen. Sitemap und Sprachumschalter folgen automatisch.
+# ERWEITERUNG: weitere Seiten hier eintragen – und in jeder i18n-Datei unter
+# slugs/meta/nav ergänzen. Sitemap und Sprachumschalter folgen automatisch.
 PAGES = {
-    "home": page_home, "profil": page_profil, "referenzen": page_referenzen,
+    "home": page_home, "leistungen": page_leistungen, "profil": page_profil, "referenzen": page_referenzen,
     "kontakt": page_kontakt, "impressum": page_impressum, "datenschutz": page_datenschutz,
 }
 
@@ -660,6 +816,7 @@ def write_sitemap():
 
 
 def main():
+    missing = []
     for key, fn in PAGES.items():
         for lang in CODES:
             body = fn(lang)
@@ -669,8 +826,13 @@ def main():
             out.parent.mkdir(parents=True, exist_ok=True)
             out.write_text(layout(key, lang, body), encoding="utf-8")
             print("geschrieben:", out.relative_to(ROOT))
+            todos = out.read_text(encoding="utf-8").count('<mark class="todo">')
+            if todos:
+                missing.append((str(out.relative_to(ROOT)), todos))
     write_sitemap()
     print("geschrieben: sitemap.xml, robots.txt")
+    for path, n in missing:
+        print(f"OFFEN: {n}x [BITTE ERGAENZEN] in {path}")
 
 
 if __name__ == "__main__":

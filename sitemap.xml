@@ -37,6 +37,42 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://www.stolz-consulting.net/leistungen/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.stolz-consulting.net/leistungen/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.stolz-consulting.net/en/services/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.stolz-consulting.net/fr/services/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.stolz-consulting.net/ru/services/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.stolz-consulting.net/leistungen/"/>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.stolz-consulting.net/en/services/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.stolz-consulting.net/leistungen/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.stolz-consulting.net/en/services/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.stolz-consulting.net/fr/services/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.stolz-consulting.net/ru/services/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.stolz-consulting.net/leistungen/"/>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.stolz-consulting.net/fr/services/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.stolz-consulting.net/leistungen/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.stolz-consulting.net/en/services/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.stolz-consulting.net/fr/services/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.stolz-consulting.net/ru/services/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.stolz-consulting.net/leistungen/"/>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.stolz-consulting.net/ru/services/</loc>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.stolz-consulting.net/leistungen/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.stolz-consulting.net/en/services/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.stolz-consulting.net/fr/services/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.stolz-consulting.net/ru/services/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.stolz-consulting.net/leistungen/"/>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.stolz-consulting.net/profil/</loc>
     <xhtml:link rel="alternate" hreflang="de" href="https://www.stolz-consulting.net/profil/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.stolz-consulting.net/en/profile/"/>

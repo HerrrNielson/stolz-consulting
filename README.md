@@ -14,6 +14,7 @@ Muttersprachler/innen bzw. einer Fachperson geprüft werden.**
 | Seite | DE | EN | FR | RU |
 |---|---|---|---|---|
 | Start | `/` | `/en/` | `/fr/` | `/ru/` |
+| Leistungen | `/leistungen/` | `/en/services/` | `/fr/services/` | `/ru/services/` |
 | Profil | `/profil/` | `/en/profile/` | `/fr/profil/` | `/ru/profile/` |
 | Referenzen | `/referenzen/` | `/en/references/` | `/fr/references/` | `/ru/references/` |
 | Kontakt | `/kontakt/` | `/en/contact/` | `/fr/contact/` | `/ru/contact/` |
@@ -52,14 +53,23 @@ Es werden keine Zusatzpakete benötigt (nur Python 3).
 - **Neue Sprache:** `i18n/xx.py` nach dem Muster von `de.py` anlegen, in `i18n/__init__.py`
   in `LANGUAGES` eintragen, bauen. hreflang, Sitemap und Umschalter folgen automatisch.
 - Französische Typografie (geschützte Leerzeichen vor `? ! : ;`) setzt `build.py` automatisch.
-- Kennzahlen im Zahlenband (2005 · 19 · 5) stammen aus dem Inhalt (selbständig seit 2005,
-  19 Referenzen, 5 Leistungsschwerpunkte) – bei Inhaltsänderungen prüfen.
+- Kennzahlen im Zahlenband: 2005 (seit), Anzahl `REFERENCES` in `build.py` und Anzahl der Leistungsfelder
+  (`leistungen.fields` in den i18n-Dateien) werden automatisch eingesetzt (`{refs}`, `{svc}`, `{n}`). Keine weiteren Zahlen erfinden.
+
+## Inhalte (Paket 2)
+
+- **Leistungsseite:** Leistungsfelder (Titel, Nutzen, „Wann das hilfreich ist“, Fachtags) und die drei
+  Arbeitsschritte stehen in `i18n/<sprache>.py` unter `leistungen`. Die Startseite verlinkt jedes Feld per Anker.
+- **Referenzen:** `REFERENCES` in `build.py`; Gruppierung nur über `REF_GROUP_OF` (Bildung, Dienstleistung/Gesundheit –
+  nur wo der Name es eindeutig hergibt, der Rest steht unter „Weitere Unternehmen“).
+- **Fallbeispiele und Kundenstimmen:** Struktur vorbereitet (`CASE_STUDIES`, `TESTIMONIALS` in `build.py`,
+  TODO-Kommentar). Solange die Listen leer sind, wird **nichts** ausgegeben. Nur mit echten, freigegebenen Inhalten füllen.
+- **Rechtstexte:** Impressum (`impressum.todo_rows`, `sections`) und Datenschutz enthalten sichtbar markierte
+  `[BITTE ERGÄNZEN]`-Platzhalter (gelb hinterlegt). `python build.py` meldet am Ende, wo noch welche offen sind.
+  Alle Rechtstexte (alle Sprachen) sind **von einer Fachperson zu prüfen**.
 
 ## Erweiterungspunkte
 
-- **Leistungsseite `/leistungen/`:** `slugs` und `meta` in jeder i18n-Datei ergänzen,
-  `page_leistungen()` in `build.py` schreiben, in `PAGES` eintragen und in `nav` aufnehmen.
-  Sitemap und Umschalter berücksichtigen sie automatisch.
 - **Popup-Modul (Problem-Analyse):** eigenes Skript `assets/js/popup.js` in `EXTRA_SCRIPTS`,
   Styles in `EXTRA_STYLES`, Markup über `EXTRA_BODY` (alle in `build.py`).
 
@@ -70,7 +80,12 @@ weiterleitet (Formularsprache DE/EN/FR/RU wird im Betreff vermerkt). Voraussetzu
 Webspace mit PHP und funktionierendem Mailversand. Ist kein PHP verfügbar, öffnet sich als
 Fallback das E-Mail-Programm des Besuchers mit der vorausgefüllten Nachricht.
 
-Noch offen: Mailversand auf dem Zielserver testen.
+Pflichtfelder: Name, E-Mail, Nachricht und Zustimmung zur Datenschutzerklärung (Checkbox mit Link). Spamschutz per
+Honeypot-Feld `website`. `contact.php` validiert serverseitig, lehnt Zeilenumbrüche in einzeiligen Feldern ab
+(Header-Injection) und antwortet als JSON (`ok`, `code`, `message`) in der Sprache des Formulars. Das Skript zeigt
+klare Erfolgs-/Fehlermeldungen (Texte in `i18n/*.py` unter `kontakt`); eine Antwortzeit wird bewusst nicht zugesagt.
+
+Noch offen: Mailversand auf dem Zielserver testen (`contact.php` wurde lokal nicht mit PHP ausgeführt).
 
 ## Design und Technik
 

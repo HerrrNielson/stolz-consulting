@@ -43,7 +43,7 @@
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav"
               aria-label="Открыть меню" data-label-open="Открыть меню" data-label-close="Закрыть меню"><span></span></button>
       <nav class="nav" id="nav" aria-label="Основная навигация">
-        <ul class="nav__list"><li><a class="nav__link" href="../../ru/profile/"><span class="nav__num" aria-hidden="true">01</span><span>Профиль</span></a></li><li><a class="nav__link" href="../../ru/references/"><span class="nav__num" aria-hidden="true">02</span><span>Референции</span></a></li><li><a class="nav__link" href="../../ru/contact/" aria-current="page"><span class="nav__num" aria-hidden="true">03</span><span>Контакты</span></a></li></ul>
+        <ul class="nav__list"><li><a class="nav__link" href="../../ru/services/"><span class="nav__num" aria-hidden="true">01</span><span>Услуги</span></a></li><li><a class="nav__link" href="../../ru/profile/"><span class="nav__num" aria-hidden="true">02</span><span>Профиль</span></a></li><li><a class="nav__link" href="../../ru/references/"><span class="nav__num" aria-hidden="true">03</span><span>Референции</span></a></li><li><a class="nav__link" href="../../ru/contact/" aria-current="page"><span class="nav__num" aria-hidden="true">04</span><span>Контакты</span></a></li></ul>
         <div class="lang" role="group" aria-label="Выбор языка" data-lang-switch><a class="lang__item" href="../../kontakt/" lang="de" hreflang="de" aria-label="Deutsch">DE</a><a class="lang__item" href="../../en/contact/" lang="en" hreflang="en" aria-label="English">EN</a><a class="lang__item" href="../../fr/contact/" lang="fr" hreflang="fr" aria-label="Français">FR</a><a class="lang__item" href="../../ru/contact/" lang="ru" hreflang="ru" aria-label="Русский" aria-current="true">RU</a></div>
         <div class="nav__foot">
           <a class="nav__mail" href="mailto:office@stolz-consulting.net">office@stolz-consulting.net</a>
@@ -59,7 +59,7 @@
       <div class="container" data-stagger>
         <p class="eyebrow reveal">Контакты</p>
         <h1 class="h1 reveal">Свяжитесь <em>со мной</em></h1>
-        <p class="lead reveal">Интересуют мои услуги? Напишите мне через форму или воспользуйтесь прямыми контактными данными.</p>
+        <p class="lead reveal">Интересуют мои услуги? Напишите мне через форму или воспользуйтесь прямыми контактными данными. Первая ознакомительная беседа ни к чему не обязывает.</p>
       </div>
     </section>
 
@@ -67,39 +67,41 @@
       <div class="container contact-grid">
         <form class="form reveal" action="../../contact.php" method="post" novalidate data-contact-form
               data-mailto="office@stolz-consulting.net" data-subject="Запрос через stolz-consulting.net"
-              data-msg-ok="Благодарю Вас за сообщение. Я свяжусь с Вами в ближайшее время." data-msg-error="К сожалению, сообщение не удалось отправить. Пожалуйста, напишите напрямую на office@stolz-consulting.net." data-msg-mailto="Ваша почтовая программа открыта с Вашим сообщением. Пожалуйста, отправьте письмо из неё.">
+              data-msg-ok="Благодарю Вас, Ваше сообщение получено." data-msg-error="К сожалению, сообщение не удалось отправить. Пожалуйста, повторите попытку позже или напишите напрямую на office@stolz-consulting.net." data-msg-mailto="Ваша почтовая программа открыта с Вашим сообщением. Пожалуйста, отправьте письмо из неё."
+              data-msg-invalid="Пожалуйста, заполните все обязательные поля, укажите действительный адрес электронной почты и подтвердите политику конфиденциальности.">
           <input type="hidden" name="lang" value="ru">
+          <p class="form__note">Поля, отмеченные *, обязательны для заполнения.</p>
           <div class="form__row">
             <div class="field">
-              <label for="f-name">Имя</label>
-              <input id="f-name" name="name" type="text" autocomplete="name" required>
+              <label for="f-name">Имя <span class="req" aria-hidden="true">*</span></label>
+              <input id="f-name" name="name" type="text" autocomplete="name" maxlength="120" required aria-required="true">
             </div>
             <div class="field">
               <label for="f-company">Компания <span class="opt">(необязательно)</span></label>
-              <input id="f-company" name="company" type="text" autocomplete="organization">
+              <input id="f-company" name="company" type="text" autocomplete="organization" maxlength="160">
             </div>
           </div>
           <div class="form__row">
             <div class="field">
-              <label for="f-email">Адрес электронной почты</label>
-              <input id="f-email" name="email" type="email" autocomplete="email" required>
+              <label for="f-email">Адрес электронной почты <span class="req" aria-hidden="true">*</span></label>
+              <input id="f-email" name="email" type="email" autocomplete="email" maxlength="160" required aria-required="true">
             </div>
             <div class="field">
               <label for="f-phone">Телефон <span class="opt">(необязательно)</span></label>
-              <input id="f-phone" name="phone" type="tel" autocomplete="tel">
+              <input id="f-phone" name="phone" type="tel" autocomplete="tel" maxlength="60">
             </div>
           </div>
           <div class="field">
-            <label for="f-message">Сообщение</label>
-            <textarea id="f-message" name="message" rows="6" required></textarea>
+            <label for="f-message">Сообщение <span class="req" aria-hidden="true">*</span></label>
+            <textarea id="f-message" name="message" rows="6" maxlength="5000" required aria-required="true"></textarea>
           </div>
           <div class="hp" aria-hidden="true">
             <label for="f-website">Website</label>
             <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
           </div>
           <label class="check">
-            <input type="checkbox" name="consent" value="1" required>
-            <span>Я ознакомился(-лась) с <a href="../../ru/privacy/">политикой конфиденциальности</a> и согласен(-на) с тем, что мои данные будут использованы для обработки моего запроса.</span>
+            <input type="checkbox" name="consent" value="1" required aria-required="true">
+            <span>Я ознакомился(-лась) с <a href="../../ru/privacy/">политикой конфиденциальности</a> и согласен(-на) с тем, что мои данные будут использованы для обработки моего запроса. *</span>
           </label>
           <button class="btn btn--primary" type="submit"><span>Отправить сообщение</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
           <p class="form__status" role="status" aria-live="polite"></p>
