@@ -8,61 +8,85 @@
   <link rel="canonical" href="https://www.stolz-consulting.net/en/">
   <link rel="alternate" hreflang="de" href="https://www.stolz-consulting.net/">
   <link rel="alternate" hreflang="en" href="https://www.stolz-consulting.net/en/">
+  <link rel="alternate" hreflang="fr" href="https://www.stolz-consulting.net/fr/">
+  <link rel="alternate" hreflang="ru" href="https://www.stolz-consulting.net/ru/">
   <link rel="alternate" hreflang="x-default" href="https://www.stolz-consulting.net/">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Stolz Consulting">
   <meta property="og:locale" content="en_GB">
+  <meta property="og:locale:alternate" content="de_AT">
+  <meta property="og:locale:alternate" content="fr_FR">
+  <meta property="og:locale:alternate" content="ru_RU">
   <meta property="og:title" content="Stolz Consulting – Management Consulting | Mag. Dr. Sabine Stolz, MSc">
   <meta property="og:description" content="Management consulting by Mag. Dr. Sabine Stolz, MSc: management, controlling, financing, internationalisation and IT solutions for SMEs – since 2005.">
   <meta property="og:url" content="https://www.stolz-consulting.net/en/">
   <meta property="og:image" content="https://www.stolz-consulting.net/assets/img/og-image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#221b11">
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&display=swap">
+  <link rel="preload" href="../assets/fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/source-serif-4-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/fonts.css">
   <link rel="stylesheet" href="../assets/css/style.css">
+  <script>document.documentElement.classList.add("js")</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ProfessionalService", "name": "Stolz Consulting", "url": "https://www.stolz-consulting.net/", "image": "https://www.stolz-consulting.net/assets/img/og-image.jpg", "telephone": "+43 664 5302624", "email": "office@stolz-consulting.net", "founder": {"@type": "Person", "name": "Mag. Dr. Sabine Stolz, MSc"}, "foundingDate": "2005", "address": {"@type": "PostalAddress", "streetAddress": "Brünngraben 10", "postalCode": "8444", "addressLocality": "St. Andrä-Höch", "addressCountry": "AT"}}</script>
 </head>
-<body>
+<body class="page-home">
   <a class="skip-link" href="#main">Skip to content</a>
+  <div class="progress" aria-hidden="true"><span></span></div>
 
   <header class="site-header">
-    <div class="container">
+    <div class="container site-header__inner">
       <a class="brand" href="../en/" aria-label="Stolz Consulting – Home">
         <span class="brand__name">Stolz Consulting</span>
         <span class="brand__sub">Mag. Dr. Sabine Stolz, MSc</span>
       </a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav" aria-label="Open menu"><span></span></button>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav"
+              aria-label="Open menu" data-label-open="Open menu" data-label-close="Close menu"><span></span></button>
       <nav class="nav" id="nav" aria-label="Main navigation">
-        <ul class="nav__list"><li><a class="nav__link" href="../en/profile/">Profile</a></li><li><a class="nav__link" href="../en/references/">References</a></li><li><a class="nav__link" href="../en/contact/">Contact</a></li></ul>
-        <div class="lang" aria-label="Language"><a href="../" lang="de" hreflang="de">DE</a><span aria-current="true" lang="en">EN</span></div>
+        <ul class="nav__list"><li><a class="nav__link" href="../en/profile/"><span class="nav__num" aria-hidden="true">01</span><span>Profile</span></a></li><li><a class="nav__link" href="../en/references/"><span class="nav__num" aria-hidden="true">02</span><span>References</span></a></li><li><a class="nav__link" href="../en/contact/"><span class="nav__num" aria-hidden="true">03</span><span>Contact</span></a></li></ul>
+        <div class="lang" role="group" aria-label="Choose language" data-lang-switch><a class="lang__item" href="../" lang="de" hreflang="de" aria-label="Deutsch">DE</a><a class="lang__item" href="../en/" lang="en" hreflang="en" aria-label="English" aria-current="true">EN</a><a class="lang__item" href="../fr/" lang="fr" hreflang="fr" aria-label="Français">FR</a><a class="lang__item" href="../ru/" lang="ru" hreflang="ru" aria-label="Русский">RU</a></div>
+        <div class="nav__foot">
+          <a class="nav__mail" href="mailto:office@stolz-consulting.net">office@stolz-consulting.net</a>
+          <a class="nav__tel" href="tel:+436645302624">+43 664 5302624</a>
+        </div>
       </nav>
     </div>
   </header>
 
-  <main id="main">
+  <main id="main" tabindex="-1">
     <section class="hero">
+      <div class="hero__bg" aria-hidden="true"><span class="hero__glow" data-parallax="0.12"></span><span class="hero__glow hero__glow--2" data-parallax="-0.06"></span></div>
       <div class="container hero__grid">
-        <div class="reveal">
-          <p class="eyebrow">Management consulting</p>
-          <p class="hero__name">Mag. Dr. Sabine Stolz, MSc</p>
-          <h1 class="h1">Don’t let valuable time <em>slip away!</em></h1>
-          <blockquote class="hero__quote">“Those who know the goal will find their way!”</blockquote>
-          <div class="hero__text">
+        <div class="hero__copy" data-stagger>
+          <p class="eyebrow reveal">Management consulting</p>
+          <p class="hero__name reveal">Mag. Dr. Sabine Stolz, MSc</p>
+          <h1 class="h1 h1--hero reveal">Don’t let valuable time <em>slip away!</em></h1>
+          <blockquote class="hero__quote reveal">“Those who know the goal will find their way!”</blockquote>
+          <div class="hero__text reveal">
             <p class="intro">You have a vision of your company’s success? Only the path to get there is still open?</p>
             <p>Handling complex management situations, controlling strategies and international challenges, implementing user-friendly IT solutions and developing cost-effective plans to increase your company’s productivity are my areas of expertise.</p>
           </div>
-          <div class="hero__actions">
-            <a class="btn btn--primary" href="../en/contact/">Get in touch <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-            <a class="btn btn--ghost" href="../en/profile/">View profile</a>
+          <div class="hero__actions reveal">
+            <a class="btn btn--primary" href="../en/contact/"><span>Get in touch</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            <a class="btn btn--outline" href="../en/profile/"><span>View profile</span></a>
           </div>
         </div>
-        <div class="hero__media reveal">
-          <picture>
-            <source type="image/webp" srcset="../assets/img/portrait.webp">
-            <img src="../assets/img/portrait.jpg" alt="Portrait of Mag. Dr. Sabine Stolz, MSc" width="313" height="474" fetchpriority="high">
-          </picture>
+        <div class="hero__media" data-parallax="0.05">
+          <div class="hero__frame">
+            <picture>
+              <source type="image/webp" srcset="../assets/img/portrait.webp">
+              <img src="../assets/img/portrait.jpg" alt="Portrait of Mag. Dr. Sabine Stolz, MSc" width="313" height="474" fetchpriority="high" decoding="async">
+            </picture>
+          </div>
           <div class="hero__badge"><span>Since 2005</span><strong>Consulting for SMEs, finance and IT</strong></div>
         </div>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Stolz Consulting in numbers">
+      <div class="container">
+        <ul class="stats__list" data-stagger><li class="reveal"><span class="stats__num"><span data-count="2005" data-from="1995">2005</span></span><span class="stats__label">Self-employed management consultant since</span></li><li class="reveal"><span class="stats__num"><span data-count="19" data-from="0">19</span></span><span class="stats__label">References from business and education</span></li><li class="reveal"><span class="stats__num"><span data-count="5" data-from="0">5</span></span><span class="stats__label">Key service areas</span></li></ul>
       </div>
     </section>
 
@@ -72,56 +96,51 @@
           <p class="eyebrow">Key services</p>
           <h2 class="h2">The right support, from strategy to <em>implementation.</em></h2>
         </div>
-        <ul class="service-list reveal">
-          <li>Innovative and individual IT solutions</li>
-          <li>Tailor-made financing</li>
-          <li>Short-term and long-term consulting</li>
-          <li>Set-up and training</li>
-          <li>Technology, management and support</li>
-        </ul>
+        <ul class="service-list" data-stagger><li class="reveal">Innovative and individual IT solutions</li><li class="reveal">Tailor-made financing</li><li class="reveal">Short-term and long-term consulting</li><li class="reveal">Set-up and training</li><li class="reveal">Technology, management and support</li></ul>
       </div>
     </section>
 
     <section class="section section--cream">
       <div class="container split">
         <div class="split__media reveal">
-          <picture>
-            <source type="image/webp" srcset="../assets/img/city.webp">
-            <img src="../assets/img/city.jpg" alt="City skyline as a symbol of international management consulting" width="999" height="520" loading="lazy">
-          </picture>
-        </div>
-        <div class="split__text reveal">
-          <p class="eyebrow">Approach</p>
-          <h2 class="h2">Clear, individual and focused on lasting impact.</h2>
-          <div class="prose">
-            <p>I support companies with complex business challenges, combining sound financial expertise, international experience and practical IT solutions.</p>
-            <p>The focus is on viable concepts, actionable strategies and advice that keeps both your company’s short-term challenges and its long-term development in view.</p>
+          <div class="frame">
+            <picture>
+              <source type="image/webp" srcset="../assets/img/city.webp">
+              <img src="../assets/img/city.jpg" alt="City skyline as a symbol of international management consulting" width="999" height="520" loading="lazy" decoding="async">
+            </picture>
           </div>
-          <a class="link-arrow" href="../en/profile/">View profile <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+        <div class="split__text" data-stagger>
+          <p class="eyebrow reveal">Approach</p>
+          <h2 class="h2 reveal">Clear, individual and focused on lasting impact.</h2>
+          <div class="prose reveal"><p>I support companies with complex business challenges, combining sound financial expertise, international experience and practical IT solutions.</p><p>The focus is on viable concepts, actionable strategies and advice that keeps both your company’s short-term challenges and its long-term development in view.</p></div>
+          <a class="link-arrow reveal" href="../en/profile/"><span>View profile</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
       </div>
     </section>
 
-    <section class="section">
+    <section class="section section--refs">
       <div class="container">
         <div class="section__head section__head--row reveal">
           <div>
             <p class="eyebrow">References</p>
             <h2 class="h2">A selection of past collaborations</h2>
           </div>
-          <a class="link-arrow" href="../en/references/">All references <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="link-arrow" href="../en/references/"><span>All references</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
-        <ul class="logo-grid reveal"><li><img src="../assets/img/referenzen/ams.svg" alt="ams - austriamicrosystems AG" loading="lazy"></li><li><img src="../assets/img/referenzen/atb.svg" alt="ATB Austria Antriebstechnik AG" loading="lazy"></li><li><img src="../assets/img/referenzen/avl.png" alt="AVL List GmbH" loading="lazy"></li><li><img src="../assets/img/referenzen/bfi.jpg" alt="BFI Steiermark" loading="lazy"></li><li><img src="../assets/img/referenzen/efkon.jpeg" alt="Efkon AG" loading="lazy"></li><li><img src="../assets/img/referenzen/campus-02.jpeg" alt="FH Campus 02" loading="lazy"></li><li><img src="../assets/img/referenzen/fh-hamburg.png" alt="FH Hamburg" loading="lazy"></li><li><img src="../assets/img/referenzen/frauenthal.jpeg" alt="Frauenthal Holding AG" loading="lazy"></li><li><img src="../assets/img/referenzen/kurzentrum-althofen.png" alt="Kurzentrum Althofen GmbH" loading="lazy"></li><li><img src="../assets/img/referenzen/meadwestvaco.png" alt="Meadwestvaco GmbH" loading="lazy"></li><li><img src="../assets/img/referenzen/ph-steiermark.svg" alt="Pädagogische Hochschule Steiermark" loading="lazy"></li><li><img src="../assets/img/referenzen/saubermacher.jpeg" alt="Saubermacher Dienstleistungs AG" loading="lazy"></li></ul>
       </div>
+      <div class="marquee" data-marquee data-pause-label="Pause movement"><div class="marquee__viewport"><ul class="marquee__track" aria-label="Selected references"><li><img src="../assets/img/referenzen/ams.svg" alt="ams - austriamicrosystems AG" width="1072" height="295" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/atb.svg" alt="ATB Austria Antriebstechnik AG" width="403" height="227" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/avl.png" alt="AVL List GmbH" width="960" height="960" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/bfi.jpg" alt="BFI Steiermark" width="900" height="900" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/efkon.jpeg" alt="Efkon AG" width="200" height="200" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/campus-02.jpeg" alt="FH Campus 02" width="225" height="225" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/fh-hamburg.png" alt="FH Hamburg" width="219" height="230" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/frauenthal.jpeg" alt="Frauenthal Holding AG" width="200" height="200" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/kurzentrum-althofen.png" alt="Kurzentrum Althofen GmbH" width="225" height="225" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/meadwestvaco.png" alt="Meadwestvaco GmbH" width="320" height="320" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/ph-steiermark.svg" alt="Pädagogische Hochschule Steiermark" width="144" height="163" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/saubermacher.jpeg" alt="Saubermacher Dienstleistungs AG" width="225" height="225" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/security-kag.png" alt="Security KAG" width="488" height="392" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/vae.png" alt="VAE GmbH" width="697" height="308" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/voestalpine.png" alt="voestalpine AG" width="225" height="225" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/universitaet-graz.svg" alt="Universität Graz" width="68" height="59" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/wifi.png" alt="WIFI Steiermark" width="225" height="225" loading="lazy" decoding="async"></li></ul><ul class="marquee__track" aria-hidden="true"><li><img src="../assets/img/referenzen/ams.svg" alt="" width="1072" height="295" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/atb.svg" alt="" width="403" height="227" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/avl.png" alt="" width="960" height="960" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/bfi.jpg" alt="" width="900" height="900" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/efkon.jpeg" alt="" width="200" height="200" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/campus-02.jpeg" alt="" width="225" height="225" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/fh-hamburg.png" alt="" width="219" height="230" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/frauenthal.jpeg" alt="" width="200" height="200" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/kurzentrum-althofen.png" alt="" width="225" height="225" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/meadwestvaco.png" alt="" width="320" height="320" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/ph-steiermark.svg" alt="" width="144" height="163" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/saubermacher.jpeg" alt="" width="225" height="225" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/security-kag.png" alt="" width="488" height="392" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/vae.png" alt="" width="697" height="308" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/voestalpine.png" alt="" width="225" height="225" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/universitaet-graz.svg" alt="" width="68" height="59" loading="lazy" decoding="async"></li><li><img src="../assets/img/referenzen/wifi.png" alt="" width="225" height="225" loading="lazy" decoding="async"></li></ul></div></div>
     </section>
 
-    <section class="section section--dark">
-      <div class="container cta reveal">
-        <div>
-          <p class="eyebrow">Contact</p>
-          <h2 class="h2">Interested in my services?</h2>
+    <section class="section section--cta">
+      <div class="container">
+        <div class="cta reveal">
+          <div class="cta__text">
+            <p class="eyebrow">Contact</p>
+            <h2 class="h2">Interested in my services?</h2>
+          </div>
+          <a class="btn btn--primary" href="../en/contact/"><span>Get in touch</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
-        <a class="btn btn--light" href="../en/contact/">Get in touch <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
     </section>
   </main>
@@ -129,27 +148,27 @@
   <footer class="site-footer">
     <div class="container">
       <div class="site-footer__top">
-        <div>
+        <div class="site-footer__claim">
           <p class="kicker">Stolz Consulting</p>
           <p class="h2">Management consulting with structure, experience and an international perspective.</p>
         </div>
         <div class="site-footer__contact">
           <div><span class="k">Phone</span><a href="tel:+436645302624">+43 664 5302624</a></div>
           <div><span class="k">Email</span><a href="mailto:office@stolz-consulting.net">office@stolz-consulting.net</a></div>
-          <div><span class="k">Address</span><address>Brünngraben 10<br>8444 St. Andrä-Höch</address></div>
+          <div><span class="k">Address</span><address>Brünngraben 10<br>8444 St. Andrä-Höch<br>Austria</address></div>
         </div>
       </div>
       <div class="site-footer__bottom">
         <span>© <span data-year>2026</span> Stolz Consulting · Mag. Dr. Sabine Stolz, MSc</span>
-        <nav class="site-footer__links" aria-label="Footer">
+        <nav class="site-footer__links" aria-label="Legal information and languages">
           <a href="../en/imprint/">Imprint</a>
           <a href="../en/privacy/">Privacy policy</a>
-          <a href="../" lang="de" hreflang="de">Deutsch</a>
+          <a href="../" lang="de" hreflang="de">Deutsch</a><a href="../fr/" lang="fr" hreflang="fr">Français</a><a href="../ru/" lang="ru" hreflang="ru">Русский</a>
         </nav>
       </div>
     </div>
   </footer>
-
+  
   <script src="../assets/js/main.js" defer></script>
 </body>
 </html>

@@ -35,7 +35,7 @@ $phone   = field('phone', 60);
 $subject = field('subject', 160);
 $message = field('message', 5000);
 $consent = !empty($_POST['consent']);
-$lang    = field('lang', 2) === 'en' ? 'en' : 'de';
+$lang    = in_array(field('lang', 2), ['de', 'en', 'fr', 'ru'], true) ? field('lang', 2) : 'de';
 
 if ($name === '' || $message === '' || !$consent || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     http_response_code(422);
