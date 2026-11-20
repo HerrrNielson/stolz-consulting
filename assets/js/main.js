@@ -136,6 +136,21 @@
   openFromHash();
   window.addEventListener("hashchange", openFromHash);
 
+  /* ---------- Magnetische Buttons (nur Maus, nur ohne Reduced Motion) ---------- */
+  if (window.matchMedia("(pointer: fine)").matches && !reduce.matches) {
+    document.querySelectorAll(".btn--primary, .btn--outline").forEach(function (b) {
+      b.addEventListener("pointermove", function (e) {
+        var r = b.getBoundingClientRect();
+        b.style.setProperty("--mx", ((e.clientX - r.left - r.width / 2) * 0.12).toFixed(1) + "px");
+        b.style.setProperty("--my", ((e.clientY - r.top - r.height / 2) * 0.2).toFixed(1) + "px");
+      });
+      b.addEventListener("pointerleave", function () {
+        b.style.setProperty("--mx", "0px");
+        b.style.setProperty("--my", "0px");
+      });
+    });
+  }
+
   onScroll();
 
   /* ---------- Jahr im Footer ---------- */

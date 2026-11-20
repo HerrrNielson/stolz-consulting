@@ -118,16 +118,21 @@ Noch offen: Mailversand auf dem Zielserver testen (`contact.php` wurde lokal nic
 
 Designsystem „Weiß · Beige · Gold“ (Farbwelt der ursprünglichen Website; Tokens oben in `assets/css/style.css`):
 
-- **Farben:** Weiß `#ffffff` (Grund), Creme `#f5f1ea` (Wechselflächen, Eingabefelder), Beige `#ece5d8` (Footer), zarte Gold-Tönung
-  `#f3ebdb` (Icon-Flächen, CTA-Box), Gold `#b88b4a` (Hauptbuttons mit dunklem Text `#1f1810`, Linien, Icons), tieferes Gold
-  `#8f6934` (große Zahlen, Hover), Gold als Text `#7a5727`, Text/aktive Elemente warmes Dunkelbraun `#2a2118`, Muted `#5f594c`.
-  Keine Verläufe, keine Glow-/Glanz-Effekte, keine dunklen Flächen; der Footer ist eine flache beige Fläche.
-  Kontraste (WCAG): Text/Weiß ≈ 15,8:1, Muted/Creme ≈ 6,2:1, Gold-Text/Weiß ≈ 6,5:1 (Creme ≈ 5,8:1), Button dunkel/Gold ≈ 5,7:1.
-  Favicon, Touch-Icons, Manifest und `og-image.jpg` folgen derselben Palette.
+- **Farben:** Weiß `#ffffff` (Grund) und **ein** Beige `#f5f1ea` (Wechselflächen, Karten auf Weiß, Footer, Eingabefelder; die Tokens
+  `--paper-2` und `--sand` sind nur Aliase darauf). Gold `#b88b4a` ist die Hauptakzentfarbe (Buttons, Linien, Icons), tieferes Gold `#8f6934`
+  (große Zahlen), Gold als Text `#7a5727`; Text/aktive Elemente warmes Dunkelbraun `#2a2118`, Muted `#5f594c`.
+  Ergänzungsfarbe (sparsam, nur Chips): gedecktes Salbei-Olivgrün `#4f5b3c` auf Salbei-Tönung `#e5e9d9`.
+  Hintergründe wechseln Weiß → Beige; Heroes laufen sehr weich von Beige nach Weiß (nur helle Töne, nie dunkel/Gold-Verläufe).
+  Der Footer ist eine flache beige Fläche. Kontraste (WCAG AA): Text/Weiß ≈ 15,8:1, Muted/Beige ≈ 6,2:1, Gold-Text/Weiß ≈ 6,5:1
+  (Beige ≈ 5,8:1), Button dunkel/Gold ≈ 5,7:1, Salbei/Tönung ≈ 6,5:1. Favicon, Touch-Icons, Manifest und `og-image.jpg` folgen der Palette.
+- **Buttons:** runde Pillen; Primär in Gold (heller Gold-Verlauf, dunkler Text) mit Lift, Glanzstreifen, wanderndem Pfeil und leichtem
+  Magnet-Effekt (nur Maus), Sekundär als Linie mit dunkler Füllung beim Hover; gilt auch für den schwebenden Orientierungs-Button.
+  `prefers-reduced-motion` schaltet Lift, Glanz und Magnet ab.
+- **Porträt:** überall dieselbe Klasse `.frame` (abgerundetes Rechteck, Radius 14 px, versetzte Goldlinie).
 - **Schriften:** Source Serif 4 (Überschriften, Gewicht 500) und Inter (Text) – **lokal gehostet** (`assets/fonts/`,
   `font-display: swap`, Preload je Sprache, Kyrillisch für RU). Keine Verbindung zu Google Fonts.
 - **Prinzipien:** ruhig und viel Weißraum, flache Karten (Radius 16 px, 1-px-Linie), runde Buttons, Serif-Überschriften im Gewicht 400,
-  Porträts mit feinem, versetztem Goldrahmen (Hero: Bogenform), ein Hero je Startseite, Details in Akkordeons (`<details>`),
+  ein Hero je Startseite, Details in Akkordeons (`<details>`),
   Prozess-Diagramm in 3 Schritten, nur belegte Kennzahlen, keine erfundenen Inhalte. **Icons nur sparsam:** eigene Inline-SVG-Icons
   (`SERVICE_ICONS` in `build.py`) nur bei den Leistungskarten; Referenz-Schwerpunkte (Nummern), Ausbildung (Haarlinien),
   Kontaktdaten (Beschriftung) und Listenpunkte (feine Goldlinie) kommen ohne Icons aus.

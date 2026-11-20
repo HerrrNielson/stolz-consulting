@@ -288,12 +288,12 @@ def page_home(lang):
             <a class="btn btn--outline" href="{L('leistungen')}"><span>{esc(t['svc_all'])}</span></a>
           </div>
         </div>
-        <div class="hero__media">
+        <div class="hero__media"><div class="frame">
           <picture>
             <source type="image/webp" srcset="{a('img/portrait.webp')}">
             <img src="{a('img/portrait.jpg')}" alt="{esc(t['portrait_alt'])}" width="313" height="474" fetchpriority="high" decoding="async">
           </picture>
-        </div>
+        </div></div>
       </div>
     </section>
 
@@ -744,9 +744,9 @@ def layout(key, lang, body):
     extra_css = "".join(f'\n  <link rel="stylesheet" href="{a(s)}">' for s in EXTRA_STYLES)
     extra_js = "".join(f'\n  <script src="{a(s)}" defer></script>' for s in EXTRA_SCRIPTS)
     ld = f'\n  <script type="application/ld+json">{json_ld(lang)}</script>' if key == "home" else ""
-    others = "".join(
-        f'<a href="{rel(key, lang, key, x)}" lang="{x}" hreflang="{x}">{esc(LANGS[x]["name"])}</a>'
-        for x in CODES if x != lang)
+    others = "".join(   # alle vier Sprachen, die aktuelle ist markiert
+        f'<a href="{rel(key, lang, key, x)}" lang="{x}" hreflang="{x}"' + (' aria-current="true"' if x == lang else "") + f'>{esc(LANGS[x]["name"])}</a>'
+        for x in CODES)
     t_ = escape(title)
     d_ = escape(desc)
 
