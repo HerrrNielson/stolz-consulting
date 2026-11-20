@@ -40,9 +40,9 @@ DATA = dict(
     ),
     home=dict(
         eyebrow="Management consulting for SMEs",
-        h1="Clear figures, viable financing, suitable *IT solutions.*",
+        h1='Clear numbers for *clear decisions.*',
         quote="“Those who know the goal will find their way!”",
-        intro="I support small and medium-sized companies in controlling, financing, internationalisation and ERP-related IT – on a short-term or long-term basis.",
+        intro='Controlling, financing, internationalisation and ERP-related IT for small and medium-sized companies – since 2005.',
         text="You have a vision of your company’s success? Only the path to get there is still open? Then let us discuss it in an orientation call.",
         btn_primary="Request an orientation call", btn_secondary="View profile",
         portrait_alt="Portrait of Mag. Dr. Sabine Stolz, MSc",
@@ -65,7 +65,7 @@ DATA = dict(
     cta=dict(
         eyebrow="Orientation call",
         h2="Is there a question you would like to discuss?",
-        text="Briefly describe your request using the form or by email. In a non-binding orientation call we will clarify whether and how I can support you.",
+        text='In a non-binding orientation call we clarify whether and how I can support you.',
         btn="Request a call",
     ),
     leistungen=dict(
@@ -120,6 +120,7 @@ DATA = dict(
         alt="Mag. Dr. Sabine Stolz, MSc", role="Management consulting",
         langs_k="Languages", langs_v="English, French, Russian",
         since_k="Self-employed", since_v="Since 2005",
+        career_g1='Controlling and finance in companies', career_g2='Consulting and teaching', quote_h='My guiding thought',
         h_edu="Education", h_career="Career", h_extra="Qualifications",
         edu=[("Applied Business Administration", "Specialisation in controlling, financing, taxation"),
              ("Business Education", "Specialisation in didactics, business ethics"),
@@ -139,6 +140,7 @@ DATA = dict(
     referenzen=dict(
         eyebrow="References", h1="Focus areas and *experience*",
         lead="Many years of national and international experience in business, financial and IT-related matters.",
+        focus_h='Areas of focus',
         label="Experience", e2="Companies and institutions", h2="A selection of past collaborations", more="and many more",
         groups=dict(bildung="Education and universities", dienst="Services and health", weitere="Other companies"),
         items=[("Controlling and financial management", "Support with planning, management, reporting and economic development."),

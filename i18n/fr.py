@@ -46,9 +46,9 @@ DATA = dict(
     ),
     home=dict(
         eyebrow="Conseil d’entreprise pour PME",
-        h1="Des chiffres clairs, un financement solide, des *solutions informatiques* adaptées.",
+        h1='Des chiffres clairs pour des *décisions claires.*',
         quote=f"«{NB}Qui connaît son but trouve son chemin{NB}!{NB}»",
-        intro="J’accompagne les petites et moyennes entreprises en contrôle de gestion, financement, internationalisation et informatique liée à l’ERP – à court ou à long terme.",
+        intro='Contrôle de gestion, financement, internationalisation et informatique liée à l’ERP pour petites et moyennes entreprises – depuis 2005.',
         text=f"Vous avez une vision du succès de votre entreprise{NB}? Seul le chemin pour y parvenir reste encore à tracer{NB}? Nous en discutons lors d’un entretien d’orientation.",
         btn_primary="Demander un entretien d’orientation", btn_secondary="Voir le profil",
         portrait_alt="Portrait de Mag. Dr. Sabine Stolz, MSc",
@@ -71,7 +71,7 @@ DATA = dict(
     cta=dict(
         eyebrow="Entretien d’orientation",
         h2="Une question dont vous souhaitez discuter ?",
-        text="Décrivez brièvement votre demande via le formulaire ou par e-mail. Lors d’un entretien d’orientation sans engagement, nous clarifions si et comment je peux vous accompagner.",
+        text='Lors d’un entretien d’orientation sans engagement, nous clarifions si et comment je peux vous accompagner.',
         btn="Demander un entretien",
     ),
     leistungen=dict(
@@ -126,6 +126,7 @@ DATA = dict(
         alt="Mag. Dr. Sabine Stolz, MSc", role="Conseil d’entreprise",
         langs_k="Langues", langs_v="Anglais, français, russe",
         since_k="Indépendante", since_v="Depuis 2005",
+        career_g1='Contrôle de gestion et finance en entreprise', career_g2='Conseil et enseignement', quote_h='Mon fil conducteur',
         h_edu="Formation", h_career="Parcours professionnel", h_extra="Qualifications",
         edu=[("Gestion d’entreprise appliquée", f"Spécialisation{NB}: contrôle de gestion, financement, fiscalité"),
              ("Pédagogie de l’économie", f"Spécialisation{NB}: didactique, éthique des affaires"),
@@ -145,6 +146,7 @@ DATA = dict(
     referenzen=dict(
         eyebrow="Références", h1="Domaines d’intervention et *expérience*",
         lead="De longues années d’expérience nationale et internationale sur des questions de gestion, de finance et d’informatique.",
+        focus_h='Domaines d’expertise',
         label="Expérience", e2="Entreprises et institutions", h2="Une sélection de collaborations passées", more="et bien d’autres",
         groups=dict(bildung="Formation et hautes écoles", dienst="Services et santé", weitere="Autres entreprises"),
         items=[("Contrôle de gestion et pilotage financier", "Accompagnement en planification, pilotage, reporting et développement économique."),

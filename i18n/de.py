@@ -41,9 +41,9 @@ DATA = dict(
     ),
     home=dict(
         eyebrow="Unternehmensberatung für KMU",
-        h1="Klare Zahlen, tragfähige Finanzierung, passende *IT‑Lösungen.*",
+        h1='Klare Zahlen für *klare Entscheidungen.*',
         quote="„Wer das Ziel kennt, findet seinen Weg!“",
-        intro="Ich begleite kleine und mittlere Unternehmen in Controlling, Finanzierung, Internationalisierung und ERP-naher IT – kurzzeitig oder langfristig.",
+        intro='Controlling, Finanzierung, Internationalisierung und ERP-nahe IT für kleine und mittlere Unternehmen – seit 2005.',
         text="Sie haben eine Vision des Erfolgs Ihrer Firma? Nur der Weg dahin ist noch offen? Dann besprechen wir ihn im Orientierungsgespräch.",
         btn_primary="Orientierungsgespräch anfragen", btn_secondary="Profil ansehen",
         portrait_alt="Portrait von Mag. Dr. Sabine Stolz, MSc",
@@ -67,7 +67,7 @@ DATA = dict(
     cta=dict(
         eyebrow="Orientierungsgespräch",
         h2="Eine Fragestellung, über die Sie sprechen möchten?",
-        text="Schildern Sie Ihr Anliegen kurz per Formular oder E-Mail. Im unverbindlichen Orientierungsgespräch klären wir, ob und wie ich Sie unterstützen kann.",
+        text='Im unverbindlichen Orientierungsgespräch klären wir, ob und wie ich Sie unterstützen kann.',
         btn="Gespräch anfragen",
     ),
     leistungen=dict(
@@ -122,6 +122,7 @@ DATA = dict(
         alt="Mag. Dr. Sabine Stolz, MSc", role="Unternehmensberatung",
         langs_k="Sprachen", langs_v="Englisch, Französisch, Russisch",
         since_k="Selbständig", since_v="Seit 2005",
+        career_g1='Controlling und Finanzen in Unternehmen', career_g2='Beratung und Lehre', quote_h='Mein Leitgedanke',
         h_edu="Ausbildung", h_career="Berufliche Laufbahn", h_extra="Qualifikationen",
         edu=[("Angewandte Betriebswirtschaft", "Spezialisierung Controlling, Finanzierung, Steuern"),
              ("Wirtschaftspädagogik", "Spezialisierung Didaktik, Wirtschaftsethik"),
@@ -142,6 +143,7 @@ DATA = dict(
     referenzen=dict(
         eyebrow="Referenzen", h1="Schwerpunkte und *Erfahrung*",
         lead="Langjährige nationale und internationale Erfahrung in betriebswirtschaftlichen, finanziellen und IT-nahen Fragestellungen.",
+        focus_h='Schwerpunkte',
         label="Erfahrung", e2="Unternehmen und Institutionen", h2="Auswahl bisheriger Zusammenarbeit", more="u. v. m.",
         groups=dict(bildung="Bildung und Hochschulen", dienst="Dienstleistung und Gesundheit", weitere="Weitere Unternehmen"),
         items=[("Controlling und Finanzsteuerung", "Begleitung bei Planung, Steuerung, Reporting und wirtschaftlicher Weiterentwicklung."),

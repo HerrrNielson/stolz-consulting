@@ -1,7 +1,7 @@
 /* Stolz Consulting – Frontend-Skript (ohne Bibliotheken).
    Progressive Enhancement: Die Seite ist auch ohne dieses Skript vollständig lesbar.
-   Module: Header · Menü · Sprachumschalter · Einblenden · Zähler · Parallax ·
-           Marquee · Magnet-Buttons · Fortschrittsbalken · Kontaktformular
+   Module: Header · Menü · Sprachumschalter · Einblenden ·
+           Akkordeon-Anker · Marquee · Fortschrittsbalken · Kontaktformular
    ERWEITERUNG: weitere Module (z. B. Problem-Analyse-Popup) als eigene Datei in assets/js/. */
 (function () {
   "use strict";
@@ -9,7 +9,6 @@
   var doc = document.documentElement;
   doc.classList.add("js");
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
   var scrollHandlers = [];
 
   /* ---------- Scroll-Schleife (ein rAF für alles) ---------- */
@@ -96,8 +95,8 @@
   /* ---------- Einblenden (gestaffelt) ---------- */
   document.querySelectorAll("[data-stagger]").forEach(function (group) {
     var kids = group.querySelectorAll(":scope > .reveal");
-    var step = kids.length > 6 ? 45 : 90;
-    kids.forEach(function (el, i) { el.style.setProperty("--d", Math.min(i * step, 600) + "ms"); });
+    var step = kids.length > 6 ? 40 : 70;
+    kids.forEach(function (el, i) { el.style.setProperty("--d", Math.min(i * step, 280) + "ms"); });
   });
   var reveals = document.querySelectorAll(".reveal, [data-draw], .timeline");
   function showAll() {
@@ -114,45 +113,6 @@
       });
     }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
     reveals.forEach(function (el) { io.observe(el); });
-  }
-
-  /* ---------- Zähler (nur echte Zahlen; Endwert steht schon im HTML) ---------- */
-  var counters = document.querySelectorAll("[data-count]");
-  function runCounter(el) {
-    var end = parseInt(el.getAttribute("data-count"), 10);
-    var start = parseInt(el.getAttribute("data-from") || "0", 10);
-    var dur = 1600, t0 = null;
-    function frame(t) {
-      if (t0 === null) t0 = t;
-      var p = Math.min(1, (t - t0) / dur);
-      var eased = 1 - Math.pow(1 - p, 4);
-      el.textContent = Math.round(start + (end - start) * eased);
-      if (p < 1) window.requestAnimationFrame(frame);
-      else el.textContent = end;
-    }
-    window.requestAnimationFrame(frame);
-  }
-  if (counters.length && "IntersectionObserver" in window && !reduce.matches) {
-    var cio = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        runCounter(entry.target);
-        cio.unobserve(entry.target);
-      });
-    }, { threshold: 0.6 });
-    counters.forEach(function (el) { cio.observe(el); });
-  }
-
-  /* ---------- Sanfter Parallax (nur transform, nur wenn Bewegung erlaubt) ---------- */
-  var para = Array.prototype.slice.call(document.querySelectorAll("[data-parallax]"));
-  if (para.length && !reduce.matches) {
-    scrollHandlers.push(function (y) {
-      if (y > window.innerHeight * 1.5) return;
-      para.forEach(function (el) {
-        var f = parseFloat(el.getAttribute("data-parallax")) || 0;
-        el.style.setProperty("--py", (y * f).toFixed(1));
-      });
-    });
   }
 
   /* ---------- Marquee: Pausieren per Knopf, Hover und Fokus (WCAG 2.2.2) ---------- */
@@ -182,20 +142,17 @@
     }
   });
 
-  /* ---------- Magnetische Buttons (nur Maus, nur ohne Reduced Motion) ---------- */
-  if (finePointer.matches && !reduce.matches) {
-    document.querySelectorAll(".btn--primary, .btn--outline").forEach(function (b) {
-      b.addEventListener("pointermove", function (e) {
-        var r = b.getBoundingClientRect();
-        b.style.setProperty("--mx", ((e.clientX - r.left - r.width / 2) * 0.12).toFixed(1) + "px");
-        b.style.setProperty("--my", ((e.clientY - r.top - r.height / 2) * 0.2).toFixed(1) + "px");
-      });
-      b.addEventListener("pointerleave", function () {
-        b.style.setProperty("--mx", "0px");
-        b.style.setProperty("--my", "0px");
-      });
-    });
+  /* ---------- Leistungen: Anker öffnet das passende Akkordeon ---------- */
+  function openFromHash() {
+    var id = decodeURIComponent((location.hash || "").slice(1));
+    var el = id && document.getElementById(id);
+    if (el && el.tagName === "DETAILS") {
+      el.open = true;
+      window.setTimeout(function () { el.scrollIntoView({ block: "start" }); }, 30);
+    }
   }
+  openFromHash();
+  window.addEventListener("hashchange", openFromHash);
 
   onScroll();
 

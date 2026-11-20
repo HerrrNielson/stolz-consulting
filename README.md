@@ -29,7 +29,7 @@ i18n/                 Texte – eine Datei je Sprache (de.py, en.py, fr.py, ru.p
 contact.php           Handler für das Kontaktformular (versendet per PHP mail())
 assets/css/fonts.css  lokale @font-face-Regeln (Inter, Source Serif 4; latin, latin-ext, cyrillic)
 assets/css/style.css  Stylesheet (Tokens, Komponenten, Motion, Responsive)
-assets/js/main.js     Header, Menü, Sprachumschalter, Einblenden, Zähler, Parallax, Marquee, Formular
+assets/js/main.js     Header, Menü, Sprachumschalter, Einblenden, Akkordeon-Anker, Marquee, Formular
 assets/fonts/         WOFF2-Schriften (selbst gehostet, DSGVO-freundlich)
 assets/img/           Optimierte Bilder; original/ = unveränderte Downloads
 sitemap.xml, robots.txt, 404.html   werden von build.py erzeugt
@@ -51,7 +51,7 @@ Es werden keine Zusatzpakete benötigt (nur Python 3).
 ## Texte und Sprachen
 
 - Texte stehen ausschließlich in `i18n/<sprache>.py` (ein `DATA`-Dictionary je Sprache).
-  `*Wort*` in Überschriften wird zu kursivem Gold-Akzent.
+  `*Wort*` in Überschriften wird zu kursivem Petrol-Akzent.
 - **Neue Sprache:** `i18n/xx.py` nach dem Muster von `de.py` anlegen, in `i18n/__init__.py`
   in `LANGUAGES` eintragen, bauen. hreflang, Sitemap und Umschalter folgen automatisch.
 - Französische Typografie (geschützte Leerzeichen vor `? ! : ;`) setzt `build.py` automatisch.
@@ -116,17 +116,27 @@ Noch offen: Mailversand auf dem Zielserver testen (`contact.php` wurde lokal nic
 
 ## Design und Technik
 
-- Farben: Creme `#f5f1ea`, Gold `#b88b4a` (Text auf Hell: `#7a5727`), Dunkelbraun `#221b11`.
-- Schriften: Source Serif 4 (Überschriften), Inter (Fließtext) – **lokal gehostet**
-  (`assets/fonts/`, `font-display: swap`, Preload der Latin-/Kyrillisch-Datei je Sprache).
-  Es erfolgt keine Verbindung zu Google Fonts; die Datenschutzerklärung nennt das.
-  Quelle: Google Fonts (SIL Open Font License).
-- Bewegung: Intersection Observer, CSS-Scroll-Timeline (Fortschrittsbalken) und
-  View Transitions (Seitenwechsel) als Progressive Enhancement. `prefers-reduced-motion`
-  schaltet Animationen, Parallax, Marquee und Seitenübergang ab. Ohne JavaScript bleiben
-  alle Inhalte sichtbar.
-- Barrierefreiheit: Skip-Link, Landmarks, sichtbare Fokus-Stile, Pfeiltasten im
-  Sprachumschalter, Menü mit Fokusfalle und Esc, Marquee pausierbar.
+Designsystem „Papier & Petrol“ (Redesign nach Feedback, Tokens oben in `assets/css/style.css`):
+
+- **Farben:** Papier `#f6f4ee` (Grund), `#efece3` (Wechselfläche), Petrol `#14414b` (Hauptfarbe, Buttons, Footer `#0d2d35`),
+  helle Petrol-Tönung `#e3ecea` (Icons, CTA-Fläche), ein Akzent Kupfer `#c0623a` (nur Linien, Icons, kleine Highlights;
+  als Text `#9c4524`), Text `#10232b`. Keine Verläufe, keine Glow-/Glanz-Effekte; dunkle Fläche nur im Footer (flach).
+  Kontraste ≥ AA (Petrol/Papier ≈ 10:1, Muted ≈ 6,5:1, Akzent-Text ≈ 5:1).
+- **Schriften:** Source Serif 4 (Überschriften, Gewicht 500) und Inter (Text) – **lokal gehostet** (`assets/fonts/`,
+  `font-display: swap`, Preload je Sprache, Kyrillisch für RU). Keine Verbindung zu Google Fonts.
+- **Prinzipien:** ruhig und viel Weißraum, 12er-Raster, flache Karten (Radius 20 px, 1-px-Linie statt Schatten),
+  ein Hero je Startseite, Details in Akkordeons (`<details>`), Prozess-Diagramm in 3 Schritten, eigene Inline-SVG-Icons
+  (`SERVICE_ICONS`, `EDU_ICONS` in `build.py`), nur belegte Kennzahlen, keine erfundenen Inhalte.
+- **Umbrüche:** keine automatische Silbentrennung (`hyphens: manual`, kein `&shy;` im Einsatz), `overflow-wrap: normal`
+  (nur Mail-/Telefonlinks dürfen notfalls umbrechen), `text-wrap: balance` (Überschriften, Buttons) bzw. `pretty` (Text),
+  `clamp()`-Schriftgrößen, ab 380 px etwas kleinere Überschriften (lange Wörter in RU). Prüfung per Skript: Wörter, die über
+  Zeilen umbrechen, und horizontaler Überlauf bei 320/375/768/1024/1440 px auf allen 28 Seiten + 404 – keine Funde.
+- **Bewegung:** nur kurzes, leises Einblenden (0,6 s, 12 px) per Intersection Observer, Fortschrittslinie, View Transitions als
+  Progressive Enhancement; Buttons mit dezentem Hover (1 px). `prefers-reduced-motion` schaltet alles ab. Ohne JavaScript bleiben
+  alle Inhalte sichtbar. Anker auf der Leistungsseite (`#erp` …) öffnen das passende Akkordeon.
+- **CSP:** keine Inline-Styles im HTML (`style-src 'self'`); Abstände über Klassen.
+- Barrierefreiheit: Skip-Link, Landmarks, sichtbare Fokus-Stile, Pfeiltasten im Sprachumschalter, Menü mit Fokusfalle und Esc,
+  Marquee pausierbar, Akkordeons nativ per Tastatur bedienbar.
 
 ## Veröffentlichen
 

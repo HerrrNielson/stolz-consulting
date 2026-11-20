@@ -200,6 +200,37 @@ def marquee(key, lang, label, pause_label):
             f'<ul class="marquee__track" aria-hidden="true">{second}</ul></div></div>')
 
 
+def svg(inner, cls=""):
+    c = f' class="{cls}"' if cls else ""
+    return f'<svg{c} viewBox="0 0 24 24" aria-hidden="true" focusable="false">{inner}</svg>'
+
+
+# Eigene Strichgrafik-Icons (24er Raster); Klasse "ac" = Akzentlinie in Kupfer
+SERVICE_ICONS = {
+    "controlling": '<path d="M3 20h18"/><path d="M6 16v-4M11 16V9M16 16v-6"/><path class="ac" d="m5 7 5-3 4 2 5-3"/>',
+    "finanzierung": '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path class="ac" d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
+    "international": '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path class="ac" d="M12 3c3.2 3 3.2 15 0 18M12 3c-3.2 3-3.2 15 0 18"/>',
+    "erp": '<rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path class="ac" d="M14 17.5h7M17.5 14v7"/>',
+    "training": '<path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/><path class="ac" d="M22 9v6"/>',
+}
+EDU_ICONS = [
+    '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path class="ac" d="M4 21V5M9 8h6"/>',
+    '<path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/>',
+    '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path class="ac" d="M12 3c3.2 3 3.2 15 0 18M12 3c-3.2 3-3.2 15 0 18"/>',
+]
+CHEVRON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>'
+HERO_ART = ('<svg viewBox="0 0 80 56" aria-hidden="true" focusable="false"><g fill="currentColor" opacity=".85">'
+            '<rect x="4" y="34" width="12" height="18" rx="2"/><rect x="22" y="24" width="12" height="28" rx="2"/>'
+            '<rect x="40" y="30" width="12" height="22" rx="2"/><rect x="58" y="12" width="12" height="40" rx="2"/></g>'
+            '<path d="M4 22 28 12l18 6 28-14" fill="none" stroke="#c0623a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+CTA_ART = ('<svg class="cta__art" viewBox="0 0 400 260" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="2">'
+           '<circle cx="400" cy="260" r="70"/><circle cx="400" cy="260" r="140"/><circle cx="400" cy="260" r="210"/><circle cx="400" cy="260" r="280"/></g></svg>')
+
+
+def icon_box(inner):
+    return f'<span class="icon">{svg(inner)}</span>'
+
+
 def cta_block(key, lang):
     D = LANGS[lang]
     c = D["cta"]
@@ -208,6 +239,7 @@ def cta_block(key, lang):
     <section class="section section--cta">
       <div class="container">
         <div class="cta reveal">
+          {CTA_ART}
           <div class="cta__text">
             <p class="eyebrow">{esc(c['eyebrow'])}</p>
             <h2 class="h2">{em(c['h2'])}</h2>{note}
@@ -222,7 +254,6 @@ def page_hero(t, lead=True):
     lead_html = f'\n        <p class="lead reveal">{esc(t["lead"])}</p>' if lead and t.get("lead") else ""
     return f"""
     <section class="page-hero">
-      <div class="page-hero__bg" aria-hidden="true"></div>
       <div class="container" data-stagger>
         <p class="eyebrow reveal">{esc(t['eyebrow'])}</p>
         <h1 class="h1 reveal">{em(t['h1'])}</h1>{lead_html}
@@ -230,98 +261,106 @@ def page_hero(t, lead=True):
     </section>"""
 
 
+def steps_html(steps):
+    return "".join(
+        f'<li class="reveal"><span class="step__num" aria-hidden="true">{i}</span><h3>{esc(h)}</h3><p>{esc(p)}</p></li>'
+        for i, (h, p) in enumerate(steps, 1))
+
+
 # --------------------------------------------------------------------------
 # Seiten – Inhalte kommen aus i18n/<sprache>.py
 # --------------------------------------------------------------------------
 def page_home(lang):
     k, D = "home", LANGS[lang]
-    t, u = D["home"], D["ui"]
+    t, u, lt = D["home"], D["ui"], D["leistungen"]
     a = lambda p: asset(k, lang, p)
     L = lambda to: rel(k, lang, to)
-    fields = D["leistungen"]["fields"]
+    fields = lt["fields"]
     n_refs = len(REFERENCES)
 
     def stat_value(v):
         return str(n_refs) if v == "{refs}" else str(len(fields)) if v == "{svc}" else v
 
     stats = "".join(
-        f'<li class="reveal"><span class="stats__num"><span data-count="{stat_value(v)}" data-from="{f}">{stat_value(v)}</span></span>'
-        f'<span class="stats__label">{esc(label)}</span></li>' for v, f, label in t["stats"])
+        f'<li class="reveal"><span class="facts__num">{stat_value(v)}</span><span class="facts__label">{esc(label)}</span></li>'
+        for v, _f, label in t["stats"])
     svc = "".join(
-        f'<li class="reveal"><a class="svc-link" href="{L("leistungen")}#{f["id"]}">'
-        f'<span class="svc-link__t">{esc(f["title"])}</span><span class="svc-link__d">{esc(f["teaser"])}</span>{ARROW}</a></li>'
+        f'<li class="reveal"><a class="svc-card card" href="{L("leistungen")}#{f["id"]}">{icon_box(SERVICE_ICONS[f["id"]])}'
+        f'<span class="svc-card__t">{esc(f["title"])}</span><span class="svc-card__d">{esc(f["teaser"])}</span>'
+        f'<span class="svc-card__go">{ARROW}</span></a></li>'
         for f in fields)
     prose = "".join(f"<p>{esc(x)}</p>" for x in t["pr_p"])
     ref_lead = esc(t["ref_lead"].replace("{n}", str(n_refs)))
     return f"""
     <section class="hero">
-      <div class="hero__bg" aria-hidden="true"><span class="hero__glow" data-parallax="0.12"></span><span class="hero__glow hero__glow--2" data-parallax="-0.06"></span></div>
       <div class="container hero__grid">
         <div class="hero__copy" data-stagger>
           <p class="eyebrow reveal">{esc(t['eyebrow'])}</p>
-          <p class="hero__name reveal">Mag. Dr. Sabine Stolz, MSc</p>
-          <h1 class="h1 h1--hero reveal">{em(t['h1'])}</h1>
-          <div class="hero__text reveal">
-            <p class="intro">{esc(t['intro'])}</p>
-          </div>
-          <blockquote class="hero__quote reveal">{esc(t['quote'])}</blockquote>
-          <div class="hero__text reveal">
-            <p>{esc(t['text'])}</p>
-          </div>
+          <h1 class="h1 reveal">{em(t['h1'])}</h1>
+          <p class="hero__sub reveal">{esc(t['intro'])}</p>
           <div class="hero__actions reveal">
             <a class="btn btn--primary" href="{L('kontakt')}"><span>{esc(t['btn_primary'])}</span>{ARROW}</a>
-            <a class="btn btn--outline" href="{L('profil')}"><span>{esc(t['btn_secondary'])}</span></a>
+            <a class="btn btn--outline" href="{L('leistungen')}"><span>{esc(t['svc_all'])}</span></a>
           </div>
         </div>
-        <div class="hero__media" data-parallax="0.05">
-          <div class="hero__frame">
-            <picture>
-              <source type="image/webp" srcset="{a('img/portrait.webp')}">
-              <img src="{a('img/portrait.jpg')}" alt="{esc(t['portrait_alt'])}" width="313" height="474" fetchpriority="high" decoding="async">
-            </picture>
-          </div>
-          <div class="hero__badge"><span>{esc(t['badge_k'])}</span><strong>{esc(t['badge_v'])}</strong></div>
+        <div class="hero__media">
+          <picture>
+            <source type="image/webp" srcset="{a('img/portrait.webp')}">
+            <img src="{a('img/portrait.jpg')}" alt="{esc(t['portrait_alt'])}" width="313" height="474" fetchpriority="high" decoding="async">
+          </picture>
+          <div class="hero__art">{HERO_ART}</div>
         </div>
       </div>
     </section>
 
-    <section class="stats" aria-label="{esc(t['stats_label'])}">
+    <section class="facts" aria-label="{esc(t['stats_label'])}">
       <div class="container">
-        <ul class="stats__list" data-stagger>{stats}</ul>
+        <ul class="facts__list" data-stagger>{stats}</ul>
       </div>
     </section>
 
     <section class="section">
-      <div class="container services__grid">
-        <div class="reveal">
-          <p class="eyebrow">{esc(t['svc_eyebrow'])}</p>
-          <h2 class="h2">{em(t['svc_h2'])}</h2>
-          <a class="link-arrow svc-all" href="{L('leistungen')}"><span>{esc(t['svc_all'])}</span>{ARROW}</a>
+      <div class="container">
+        <div class="section__head section__head--row reveal">
+          <div>
+            <p class="eyebrow">{esc(t['svc_eyebrow'])}</p>
+            <h2 class="h2">{em(t['svc_h2'])}</h2>
+          </div>
+          <a class="link-arrow" href="{L('leistungen')}"><span>{esc(t['svc_all'])}</span>{ARROW}</a>
         </div>
-        <ul class="service-list" data-stagger>{svc}</ul>
+        <ul class="svc-cards" data-stagger>{svc}</ul>
       </div>
     </section>
 
-    <section class="section section--cream">
+    <section class="section section--paper2">
+      <div class="container">
+        <div class="section__head reveal">
+          <p class="eyebrow">{esc(lt['process_eyebrow'])}</p>
+          <h2 class="h2">{em(lt['process_h2'])}</h2>
+        </div>
+        <ol class="steps" data-stagger>{steps_html(lt['steps'])}</ol>
+      </div>
+    </section>
+
+    <section class="section">
       <div class="container shortprofile">
         <div class="shortprofile__media reveal">
-          <div class="frame">
-            <picture>
-              <source type="image/webp" srcset="{a('img/portrait.webp')}">
-              <img src="{a('img/portrait.jpg')}" alt="{esc(t['portrait_alt'])}" width="313" height="474" loading="lazy" decoding="async">
-            </picture>
-          </div>
+          <picture>
+            <source type="image/webp" srcset="{a('img/portrait.webp')}">
+            <img src="{a('img/portrait.jpg')}" alt="{esc(t['portrait_alt'])}" width="313" height="474" loading="lazy" decoding="async">
+          </picture>
         </div>
-        <div class="split__text" data-stagger>
+        <div data-stagger>
           <p class="eyebrow reveal">{esc(t['pr_eyebrow'])}</p>
           <h2 class="h2 reveal">{esc(t['pr_h2'])}</h2>
           <div class="prose reveal">{prose}</div>
+          <p class="quote reveal">{esc(t['quote'])}</p>
           <a class="link-arrow reveal" href="{L('profil')}"><span>{esc(t['ap_link'])}</span>{ARROW}</a>
         </div>
       </div>
     </section>
 
-    <section class="section section--refs">
+    <section class="section section--paper2 section--refs">
       <div class="container">
         <div class="section__head section__head--row reveal">
           <div>
@@ -340,61 +379,49 @@ def page_home(lang):
 def page_leistungen(lang):
     k, D = "leistungen", LANGS[lang]
     t = D["leistungen"]
-    chips = "".join(f'<li><a href="#{f["id"]}">{esc(f["title"])}</a></li>' for f in t["fields"])
     blocks = []
-    for i, f in enumerate(t["fields"], 1):
+    for i, f in enumerate(t["fields"]):
         tags = ""
         if f.get("tags"):
-            tags = (f'<p class="svc__tags-k">{esc(f["tags_k"])}</p>'
+            tags = (f'<p class="k k--gap">{esc(f["tags_k"])}</p>'
                     '<ul class="tags">' + "".join(f"<li>{esc(x)}</li>" for x in f["tags"]) + "</ul>")
         when = "".join(f"<li>{esc(x)}</li>" for x in f["when"])
+        opened = " open" if i == 0 else ""
         blocks.append(f"""
-        <article class="svc reveal" id="{f['id']}" aria-labelledby="{f['id']}-h">
-          <div class="svc__main">
-            <p class="svc__num" aria-hidden="true">{i:02d}</p>
-            <h3 class="h3" id="{f['id']}-h">{esc(f['title'])}</h3>
-            <p class="svc__benefit">{esc(f['benefit'])}</p>
-            {tags}
+        <details class="acc card reveal" id="{f['id']}"{opened}>
+          <summary>{icon_box(SERVICE_ICONS[f['id']])}
+            <span><span class="acc__t">{esc(f['title'])}</span><span class="acc__d">{esc(f['teaser'])}</span></span>
+            <span class="acc__chev">{CHEVRON}</span></summary>
+          <div class="acc__body">
+            <div><p>{esc(f['benefit'])}</p>{tags}</div>
+            <div class="acc__when"><p class="k">{esc(t['when_k'])}</p><ul class="check-list">{when}</ul></div>
           </div>
-          <div class="svc__when">
-            <h4>{esc(t['when_k'])}</h4>
-            <ul class="check-list">{when}</ul>
-          </div>
-        </article>""")
-    steps = "".join(
-        f'<li class="reveal"><span class="step__num" aria-hidden="true">{i}</span><h3>{esc(h)}</h3><p>{esc(p)}</p></li>'
-        for i, (h, p) in enumerate(t["steps"], 1))
+        </details>""")
     return page_hero(t) + f"""
 
-    <section class="section section--soft section--tight">
+    <section class="section section--tight">
       <div class="container">
-        <div class="note reveal">
-          <p class="eyebrow">{esc(t['form_k'])}</p>
+        <div class="form-note card reveal">
           <h2 class="h3">{esc(t['form_h'])}</h2>
           <p>{esc(t['form_p'])}</p>
         </div>
       </div>
     </section>
 
-    <section class="section">
+    <section class="section section--flush">
       <div class="container">
-        <div class="section__head reveal">
-          <p class="eyebrow">{esc(t['fields_eyebrow'])}</p>
-          <h2 class="h2">{em(t['fields_h2'])}</h2>
-          <ul class="chips" aria-label="{esc(t['fields_eyebrow'])}">{chips}</ul>
-        </div>
-        <div class="svc-list">{"".join(blocks)}
+        <div class="acc-list" data-stagger>{"".join(blocks)}
         </div>
       </div>
     </section>
 
-    <section class="section section--cream">
+    <section class="section section--paper2">
       <div class="container">
         <div class="section__head reveal">
           <p class="eyebrow">{esc(t['process_eyebrow'])}</p>
           <h2 class="h2">{em(t['process_h2'])}</h2>
         </div>
-        <ol class="steps" data-stagger>{steps}</ol>
+        <ol class="steps" data-stagger>{steps_html(t['steps'])}</ol>
       </div>
     </section>
 {cta_block(k, lang)}"""
@@ -404,53 +431,56 @@ def page_profil(lang):
     k, D = "profil", LANGS[lang]
     t = D["profil"]
     a = lambda p: asset(k, lang, p)
-    edu = "".join(f'<li class="reveal"><strong>{esc(x)}</strong><span>{esc(y)}</span></li>' for x, y in t["edu"])
-    car = "".join(
-        f'<li class="reveal{" is-current" if cur else ""}">'
-        + (f'<span class="tl__period">{esc(period)}</span>' if period else "")
-        + f'<strong>{esc(x)}</strong><span>{esc(y)}</span></li>'
-        for x, y, period, cur in t["career"])
+    edu = "".join(f'<li class="card reveal">{icon_box(EDU_ICONS[i % 3])}<strong>{esc(x)}</strong><span>{esc(y)}</span></li>'
+                  for i, (x, y) in enumerate(t["edu"]))
+
+    def career(items):
+        return "".join(
+            f'<li class="card reveal{" is-current" if cur else ""}">'
+            + (f'<span class="tl__period">{esc(period)}</span>' if period else "")
+            + f'<strong>{esc(x)}</strong><span>{esc(y)}</span></li>'
+            for x, y, period, cur in items)
+    car = t["career"]
+    glance = "".join(f'<li class="card reveal"><strong>{esc(v)}</strong><span>{esc(lbl)}</span></li>' for v, lbl in
+                     [(car[4][2], car[4][0]), (car[5][2], car[5][0]), (t["langs_v"], t["langs_k"])])
     tags = "".join(f"<li>{esc(x)}</li>" for x in t["tags"])
-    chk = "".join(f'<li class="reveal">{esc(x)}</li>' for x in t["checks"])
+    seminars = next(f for f in D["leistungen"]["fields"] if f["id"] == "training")["tags"]
+    sem = "".join(f"<li>{esc(x)}</li>" for x in seminars)
     return page_hero(t) + f"""
 
-    <section class="section">
+    <section class="section section--flush">
       <div class="container profile">
         <aside class="profile__aside reveal">
-          <div class="frame frame--portrait">
-            <picture>
-              <source type="image/webp" srcset="{a('img/portrait.webp')}">
-              <img src="{a('img/portrait.jpg')}" alt="{esc(t['alt'])}" width="313" height="474" decoding="async">
-            </picture>
-          </div>
+          <picture>
+            <source type="image/webp" srcset="{a('img/portrait.webp')}">
+            <img src="{a('img/portrait.jpg')}" alt="{esc(t['alt'])}" width="313" height="474" decoding="async">
+          </picture>
           <div class="profile__card">
             <p class="name">Mag. Dr. Sabine Stolz, MSc</p>
             <p class="role">{esc(t['role'])}</p>
-            <dl>
-              <dt>{esc(t['langs_k'])}</dt><dd>{esc(t['langs_v'])}</dd>
-              <dt>{esc(t['since_k'])}</dt><dd>{esc(t['since_v'])}</dd>
-            </dl>
           </div>
         </aside>
 
         <div class="profile__main">
+          <ul class="glance" data-stagger>{glance}</ul>
+
           <div class="profile__block">
-            <p class="eyebrow reveal">01</p>
             <h2 class="h3 reveal">{esc(t['h_edu'])}</h2>
             <ul class="edu-list" data-stagger>{edu}</ul>
           </div>
           <div class="profile__block">
-            <p class="eyebrow reveal">02</p>
             <h2 class="h3 reveal">{esc(t['h_career'])}</h2>
-            <ol class="timeline" data-stagger>{car}</ol>
+            <h3 class="profile__sub reveal">{esc(t['career_g1'])}</h3>
+            <ol class="timeline" data-stagger>{career(car[:4])}</ol>
+            <h3 class="profile__sub reveal">{esc(t['career_g2'])}</h3>
+            <ol class="timeline" data-stagger>{career(car[4:])}</ol>
           </div>
           <div class="profile__block">
-            <p class="eyebrow reveal">03</p>
             <h2 class="h3 reveal">{esc(t['h_extra'])}</h2>
-            <p class="svc__tags-k reveal">{esc(t['tags_k'])}</p>
+            <p class="k reveal">{esc(t['tags_k'])}</p>
             <ul class="tags reveal">{tags}</ul>
-            <p class="svc__tags-k reveal">{esc(t['checks_k'])}</p>
-            <ul class="check-list" data-stagger>{chk}</ul>
+            <p class="k k--gap reveal">{esc(t['checks_k'])}</p>
+            <ul class="tags reveal">{sem}</ul>
           </div>
         </div>
       </div>
@@ -489,9 +519,10 @@ def render_case_studies(lang, t):
 def page_referenzen(lang):
     k, D = "referenzen", LANGS[lang]
     t = D["referenzen"]
+    ficons = ["controlling", "international", "erp", "training"]
     cards = "".join(
-        f'<li class="reveal"><span class="label">{esc(t["label"])}</span><h2>{esc(h)}</h2><p>{esc(p)}</p></li>'
-        for h, p in t["items"])
+        f'<li class="card reveal">{icon_box(SERVICE_ICONS[ficons[i]])}<h3>{esc(h)}</h3><p>{esc(p)}</p></li>'
+        for i, (h, p) in enumerate(t["items"]))
     groups = []
     for g in REF_GROUP_ORDER:
         items = [r for r in REFERENCES if REF_GROUP_OF.get(r[0], "weitere") == g]
@@ -500,13 +531,14 @@ def page_referenzen(lang):
         groups.append(f'<div class="ref-group"><h3 class="ref-group__h reveal">{esc(t["groups"][g])}</h3>{logo_grid(k, lang, items)}</div>')
     return page_hero(t) + f"""
 
-    <section class="section section--soft">
+    <section class="section section--flush">
       <div class="container">
-        <ul class="expertise" data-stagger>{cards}</ul>
+        <p class="eyebrow reveal">{esc(t['focus_h'])}</p>
+        <ul class="focus" data-stagger>{cards}</ul>
       </div>
     </section>
 
-    <section class="section">
+    <section class="section section--paper2">
       <div class="container">
         <div class="section__head reveal">
           <p class="eyebrow">{esc(t['e2'])}</p>
@@ -576,9 +608,9 @@ def page_kontakt(lang):
           <p class="name">Stolz Consulting</p>
           <p class="role">Mag. Dr. Sabine Stolz, MSc · {esc(t['role'])}</p>
           <ul>
-            <li>{ICON_PHONE}<div><span class="k">{esc(u['phone'])}</span><a href="{c['phone_href']}">{esc(u['phone_display'])}</a></div></li>
-            <li>{ICON_MAIL}<div><span class="k">{esc(u['email'])}</span><a href="mailto:{c['email']}">{c['email']}</a></div></li>
-            <li>{ICON_PIN}<div><span class="k">{esc(u['address'])}</span><address>{c['street']}<br>{c['city']}<br>{esc(u['country'])}</address></div></li>
+            <li><span class="icon">{ICON_PHONE}</span><div><span class="k">{esc(u['phone'])}</span><a href="{c['phone_href']}">{esc(u['phone_display'])}</a></div></li>
+            <li><span class="icon">{ICON_MAIL}</span><div><span class="k">{esc(u['email'])}</span><a href="mailto:{c['email']}">{c['email']}</a></div></li>
+            <li><span class="icon">{ICON_PIN}</span><div><span class="k">{esc(u['address'])}</span><address>{c['street']}<br>{c['city']}<br>{esc(u['country'])}</address></div></li>
           </ul>
         </aside>
       </div>
@@ -760,7 +792,7 @@ def layout(key, lang, body):
   <meta name="twitter:title" content="{t_}">
   <meta name="twitter:description" content="{d_}">
   <meta name="twitter:image" content="{DOMAIN}/assets/img/og-image.jpg">
-  <meta name="theme-color" content="#221b11">
+  <meta name="theme-color" content="#f6f4ee">
   <link rel="icon" type="image/svg+xml" href="{a('img/favicon.svg')}">
   <link rel="apple-touch-icon" href="{a('img/apple-touch-icon.png')}">
   <link rel="manifest" href="{asset(key, lang, '')[:-len('assets/')]}site.webmanifest">
@@ -854,7 +886,7 @@ NOT_FOUND = {  # 404-Seite: sprachneutral, alle vier Sprachen untereinander (Hau
 
 def write_404():
     blocks = "".join(
-        f'<div class="nf__item" lang="{c}"><h2 class="h3">{esc(v[0])}</h2><p>{esc(v[1])}</p>'
+        f'<div class="nf__item card" lang="{c}"><h2 class="h3">{esc(v[0])}</h2><p>{esc(v[1])}</p>'
         f'<a class="btn {"btn--primary" if c == "de" else "btn--outline"}" href="{v[3]}"><span>{esc(v[2])}</span>{ARROW}</a></div>'
         for c, v in NOT_FOUND.items())
     pre = "\n  ".join(
@@ -867,7 +899,7 @@ def write_404():
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>404 – Stolz Consulting</title>
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#221b11">
+  <meta name="theme-color" content="#f6f4ee">
   <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
   {pre}
   <link rel="stylesheet" href="/assets/css/fonts.css">
@@ -882,7 +914,6 @@ def write_404():
   </header>
   <main id="main" tabindex="-1">
     <section class="page-hero">
-      <div class="page-hero__bg" aria-hidden="true"></div>
       <div class="container">
         <p class="eyebrow">404</p>
         <h1 class="h1">Seite nicht gefunden · Page not found</h1>
