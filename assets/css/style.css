@@ -404,7 +404,7 @@ main:focus { outline: none; }
 }
 .expertise li::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: linear-gradient(90deg, var(--gold-light), var(--gold-deep)); transform-origin: left; }
 .expertise .label { font-size: .75rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-text); }
-.expertise h3 { margin: 14px 0 12px; font-family: var(--font-serif); font-weight: 400; font-size: 1.35rem; line-height: 1.25; hyphens: auto; overflow-wrap: break-word; }
+.expertise h2, .expertise h3 { margin: 14px 0 12px; font-family: var(--font-serif); font-weight: 400; font-size: 1.35rem; line-height: 1.25; hyphens: auto; overflow-wrap: break-word; }
 .expertise p { font-size: .95rem; color: var(--muted); }
 
 .logo-grid { display: grid; grid-template-columns: repeat(6, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
@@ -692,3 +692,13 @@ mark.todo { padding: 1px 6px; font-weight: 600; color: #5a1f19; background: #ffe
   .brand__sub { letter-spacing: .1em; }
   .btn { padding: 0 20px; }
 }
+
+/* ---------- 404 ---------- */
+.nf { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+.nf__item p { color: var(--muted); margin: 8px 0 20px; }
+@media (max-width: 1080px) { .nf { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .nf { grid-template-columns: 1fr; } }
+.field input[aria-invalid="true"], .field textarea[aria-invalid="true"] { border-color: var(--error); }
+.form input[type="checkbox"][aria-invalid="true"] { outline: 2px solid var(--error); outline-offset: 2px; }
+/* Sprachlink „Русский“ in der Fußzeile nutzt eine Systemschrift – spart den Download der kyrillischen Webfonts auf DE/EN/FR-Seiten */
+html:not([lang="ru"]) .site-footer__links a[lang="ru"] { font-family: Arial, "Helvetica Neue", sans-serif; }

@@ -1,0 +1,69 @@
+# Stolz Consulting – Apache-Konfiguration (Webspace mit mod_rewrite, mod_headers, mod_expires)
+# Beim Hosting-Anbieter prüfen, dass .htaccess ausgewertet wird (AllowOverride).
+# Nicht-Apache-Server (nginx, IIS): siehe README, Abschnitt „Veröffentlichen“.
+
+DirectoryIndex index.html index.php
+Options -Indexes
+ErrorDocument 404 /404.html
+AddDefaultCharset UTF-8
+
+# --- HTTPS und www als Standard-Adresse (Canonical = https://www.stolz-consulting.net) ---
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Lokale Tests (localhost) nicht umleiten
+  RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
+  RewriteCond %{HTTPS} !=on [OR]
+  RewriteCond %{HTTP_HOST} !^www\. [NC]
+  RewriteRule ^ https://www.stolz-consulting.net%{REQUEST_URI} [L,R=301]
+
+  # Build-/Quelldateien nicht ausliefern
+  RewriteRule ^(build\.py|i18n/|README\.md|\.gitignore|\.claude/|__pycache__/) - [F,L]
+</IfModule>
+
+# --- Sicherheits-Header ---
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "DENY"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), interest-cohort=()"
+  # HSTS erst aktivieren, wenn HTTPS dauerhaft funktioniert (danach schwer rückgängig zu machen):
+  # Header always set Strict-Transport-Security "max-age=31536000"
+
+  # CSP: alles nur von der eigenen Domain (Schriften/Skripte/Styles lokal). Ausnahme: das kleine
+  # Inline-Skript im <head> (setzt die Klasse "js") ist per Hash erlaubt. Ändert sich dieses Skript
+  # in build.py, muss der Hash angepasst werden (Browser-Konsole zeigt den neuen Hash an).
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-qOhFsq0QMV2REqNwk5hGH5bZE9SkX6gt6yeyKdYPv+U='; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'"
+</IfModule>
+
+# --- Komprimierung ---
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript application/json application/manifest+json image/svg+xml application/xml text/plain
+</IfModule>
+
+# --- Caching (Dateinamen enthalten keinen Hash: bei Änderungen kurze Laufzeit für CSS/JS) ---
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+  AddType font/woff2 .woff2
+  AddType image/webp .webp
+</IfModule>
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 hour"
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 1 week"
+  ExpiresByType application/javascript "access plus 1 week"
+  ExpiresByType text/javascript "access plus 1 week"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/webp "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType application/xml "access plus 1 day"
+  ExpiresByType text/plain "access plus 1 day"
+</IfModule>
+<IfModule mod_headers.c>
+  <FilesMatch "\.(woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>

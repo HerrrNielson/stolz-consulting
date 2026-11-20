@@ -32,7 +32,9 @@ assets/css/style.css  Stylesheet (Tokens, Komponenten, Motion, Responsive)
 assets/js/main.js     Header, Menü, Sprachumschalter, Einblenden, Zähler, Parallax, Marquee, Formular
 assets/fonts/         WOFF2-Schriften (selbst gehostet, DSGVO-freundlich)
 assets/img/           Optimierte Bilder; original/ = unveränderte Downloads
-sitemap.xml, robots.txt   werden von build.py erzeugt
+sitemap.xml, robots.txt, 404.html   werden von build.py erzeugt
+site.webmanifest      Web-App-Manifest (Name, Farben, Icons)
+.htaccess             Apache: HTTPS/www-Umleitung, Sicherheits-Header (CSP), Caching, 404
 index.html, */        Generierte Seiten (nicht direkt bearbeiten)
 ```
 
@@ -125,3 +127,41 @@ Noch offen: Mailversand auf dem Zielserver testen (`contact.php` wurde lokal nic
   alle Inhalte sichtbar.
 - Barrierefreiheit: Skip-Link, Landmarks, sichtbare Fokus-Stile, Pfeiltasten im
   Sprachumschalter, Menü mit Fokusfalle und Esc, Marquee pausierbar.
+
+## Veröffentlichen
+
+**Voraussetzungen:** Webspace mit PHP (für `contact.php` und `mail()`), HTTPS-Zertifikat, Apache mit
+`mod_rewrite`, `mod_headers`, `mod_expires` (bei den meisten Anbietern Standard).
+
+1. `python build.py` ausführen und den **gesamten Ordnerinhalt** per (S)FTP in das Web-Root der Domain hochladen
+   (`.htaccess` nicht vergessen – versteckte Datei). `build.py`, `i18n/`, `README.md` werden vom Server nicht
+   ausgeliefert (Sperre in `.htaccess`), müssen aber nicht hochgeladen werden.
+2. **Domain/DNS prüfen:** `www.stolz-consulting.net` und `stolz-consulting.net` müssen auf den neuen Webspace zeigen;
+   das Zertifikat muss **beide** Namen abdecken. `.htaccess` leitet `http://` und die Adresse ohne `www` per 301 auf
+   `https://www.stolz-consulting.net` um (Canonical, Sitemap und hreflang verwenden genau diese Adresse). Soll die Domain
+   ohne `www` die Hauptadresse sein, `DOMAIN` in `build.py` und die Rewrite-Regel in `.htaccess` anpassen und neu bauen.
+3. **Mail-Test:** über `/kontakt/` (und über den Orientierungs-Check) je ein Testformular absenden, prüfen, dass die Mail an
+   `office@stolz-consulting.net` ankommt (auch Spam-Ordner; Absenderadresse/SPF beim Hoster prüfen). Kommt nichts an,
+   `mail()`-Freischaltung beim Hoster erfragen. Ohne PHP greift nur der mailto-Fallback.
+4. **Header kontrollieren** (z. B. Browser-Entwicklertools, Netzwerk → Antwort-Header): `Content-Security-Policy`,
+   `X-Content-Type-Options`, `Referrer-Policy` vorhanden? Wenn der Hoster `.htaccess` ignoriert, die Werte dort im
+   Kundenbereich setzen. Browser-Konsole auf CSP-Meldungen prüfen. Das Inline-Skript im `<head>` ist per Hash erlaubt –
+   Änderungen daran erfordern einen neuen Hash in `.htaccess`. HSTS ist vorbereitet, aber auskommentiert: erst aktivieren,
+   wenn HTTPS dauerhaft funktioniert.
+5. **404-Seite:** eine nicht existierende Adresse aufrufen (z. B. `/gibtsnicht`) → `404.html` erscheint.
+6. **Suchmaschinen:** `https://www.stolz-consulting.net/sitemap.xml` in der Google Search Console / Bing Webmaster Tools
+   einreichen; Social-Vorschau mit dem Facebook-Sharing-Debugger bzw. LinkedIn Post Inspector testen.
+7. **Platzhalter schließen:** `python build.py` listet am Ende alle offenen `[BITTE ERGÄNZEN]`-Stellen (Impressum, Hosting im
+   Datenschutz). Vor Livegang alle ergänzen und die Rechtstexte juristisch prüfen lassen.
+8. Alte Website: Vor dem Umschalten die alten URLs prüfen; wenn sie sich unterscheiden, 301-Weiterleitungen in `.htaccess` ergänzen.
+
+**Andere Server:** nginx/IIS ignorieren `.htaccess`. Dort gleichwertig einrichten: Weiterleitung auf `https://www…`,
+`error_page 404 /404.html`, die Header aus `.htaccess`, Cache-Zeiten (HTML kurz, Schriften 1 Jahr, CSS/JS 1 Woche) und
+`contact.php` über PHP-FPM.
+
+## Qualitätssicherung (Paket 4)
+
+Geprüft: alle 28 Seiten bei 320/375/768/1440 px auf horizontalen Überlauf und abgeschnittenen Text (keine Funde),
+Überschriftenhierarchie, Alt-Texte, tote interne Links, deutsche Reste in EN/FR/RU, Farbkontraste, Formular- und
+Popup-Bedienung (Tastatur, Esc, Fokus), keine externen Requests, CLS 0. Nicht automatisch prüfbar: Lighthouse (nicht
+ausgeführt), echter Mailversand, `php -l`, Screenreader.

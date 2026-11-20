@@ -237,8 +237,14 @@
     if (!form.checkValidity()) {
       /* Klare Meldung statt nur Browser-Sprechblase; Fokus auf das erste fehlerhafte Feld */
       show("error", form.getAttribute("data-msg-invalid"));
-      var bad = form.querySelector(":invalid");
-      if (bad) bad.focus();
+      var bads = form.querySelectorAll(":invalid");
+      Array.prototype.forEach.call(form.elements, function (f) { f.removeAttribute("aria-invalid"); });
+      Array.prototype.forEach.call(bads, function (f) {
+        f.setAttribute("aria-invalid", "true");
+        var clear = function () { if (f.validity.valid) f.removeAttribute("aria-invalid"); };
+        f.addEventListener("input", clear); f.addEventListener("change", clear);
+      });
+      if (bads[0]) bads[0].focus();
       return;
     }
     var data = new FormData(form);

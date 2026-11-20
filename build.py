@@ -184,7 +184,7 @@ def logo_grid(key, lang, items):
     out = []
     for name, file in items:
         if file:
-            out.append(f'<li class="reveal">{logo_img(key, lang, name, file)}<span class="logo-name">{esc(name)}</span></li>')
+            out.append(f'<li class="reveal">{logo_img(key, lang, name, file, alt=False)}<span class="logo-name">{esc(name)}</span></li>')
         else:
             out.append(f'<li class="reveal"><span class="logo-text">{esc(name)}</span></li>')
     return '<ul class="logo-grid" data-stagger>' + "".join(out) + "</ul>"
@@ -490,7 +490,7 @@ def page_referenzen(lang):
     k, D = "referenzen", LANGS[lang]
     t = D["referenzen"]
     cards = "".join(
-        f'<li class="reveal"><span class="label">{esc(t["label"])}</span><h3>{esc(h)}</h3><p>{esc(p)}</p></li>'
+        f'<li class="reveal"><span class="label">{esc(t["label"])}</span><h2>{esc(h)}</h2><p>{esc(p)}</p></li>'
         for h, p in t["items"])
     groups = []
     for g in REF_GROUP_ORDER:
@@ -753,9 +753,17 @@ def layout(key, lang, body):
   <meta property="og:description" content="{d_}">
   <meta property="og:url" content="{canonical}">
   <meta property="og:image" content="{DOMAIN}/assets/img/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="624">
+  <meta property="og:image:alt" content="Stolz Consulting – Mag. Dr. Sabine Stolz, MSc">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{t_}">
+  <meta name="twitter:description" content="{d_}">
+  <meta name="twitter:image" content="{DOMAIN}/assets/img/og-image.jpg">
   <meta name="theme-color" content="#221b11">
   <link rel="icon" type="image/svg+xml" href="{a('img/favicon.svg')}">
+  <link rel="apple-touch-icon" href="{a('img/apple-touch-icon.png')}">
+  <link rel="manifest" href="{asset(key, lang, '')[:-len('assets/')]}site.webmanifest">
   {font_preloads(key, lang)}
   <link rel="stylesheet" href="{a('css/fonts.css')}">
   <link rel="stylesheet" href="{a('css/style.css')}">{extra_css}
@@ -833,7 +841,66 @@ def write_sitemap():
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
            + "\n".join(urls) + "\n</urlset>\n")
     (ROOT / "sitemap.xml").write_text(xml, encoding="utf-8")
-    (ROOT / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {DOMAIN}/sitemap.xml\n", encoding="utf-8")
+    (ROOT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /contact.php\n\nSitemap: {DOMAIN}/sitemap.xml\n", encoding="utf-8")
+
+
+NOT_FOUND = {  # 404-Seite: sprachneutral, alle vier Sprachen untereinander (Hauptpfade absolut, da beliebig tief aufrufbar)
+    "de": ("Seite nicht gefunden", "Diese Adresse gibt es nicht (mehr). Bitte gehen Sie zur Startseite.", "Zur Startseite", "/"),
+    "en": ("Page not found", "This address does not exist (any more). Please go to the home page.", "Go to home page", "/en/"),
+    "fr": ("Page introuvable", "Cette adresse n’existe pas (ou plus). Veuillez retourner à la page d’accueil.", "Page d’accueil", "/fr/"),
+    "ru": ("Страница не найдена", "Такого адреса нет (или больше нет). Пожалуйста, перейдите на главную страницу.", "На главную", "/ru/"),
+}
+
+
+def write_404():
+    blocks = "".join(
+        f'<div class="nf__item" lang="{c}"><h2 class="h3">{esc(v[0])}</h2><p>{esc(v[1])}</p>'
+        f'<a class="btn {"btn--primary" if c == "de" else "btn--outline"}" href="{v[3]}"><span>{esc(v[2])}</span>{ARROW}</a></div>'
+        for c, v in NOT_FOUND.items())
+    pre = "\n  ".join(
+        f'<link rel="preload" href="/assets/fonts/{n}.woff2" as="font" type="font/woff2" crossorigin>'
+        for n in ["inter-normal-latin", "source-serif-4-normal-latin"])
+    html = f"""<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 – Stolz Consulting</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#221b11">
+  <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+  {pre}
+  <link rel="stylesheet" href="/assets/css/fonts.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="page-404">
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="/" aria-label="Stolz Consulting"><span class="brand__name">Stolz Consulting</span><span class="brand__sub">Mag. Dr. Sabine Stolz, MSc</span></a>
+    </div>
+  </header>
+  <main id="main" tabindex="-1">
+    <section class="page-hero">
+      <div class="page-hero__bg" aria-hidden="true"></div>
+      <div class="container">
+        <p class="eyebrow">404</p>
+        <h1 class="h1">Seite nicht gefunden · Page not found</h1>
+      </div>
+    </section>
+    <section class="section">
+      <div class="container nf">{blocks}</div>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="container"><div class="site-footer__bottom">
+    <span>© Stolz Consulting · Mag. Dr. Sabine Stolz, MSc</span>
+    <nav class="site-footer__links" aria-label="Sprachen / Languages"><a href="/" lang="de" hreflang="de">Deutsch</a><a href="/en/" lang="en" hreflang="en">English</a><a href="/fr/" lang="fr" hreflang="fr">Français</a><a href="/ru/" lang="ru" hreflang="ru">Русский</a></nav>
+  </div></div></footer>
+</body>
+</html>
+"""
+    (ROOT / "404.html").write_text(html, encoding="utf-8")
+    print("geschrieben: 404.html")
 
 
 def main():
@@ -851,6 +918,7 @@ def main():
             if todos:
                 missing.append((str(out.relative_to(ROOT)), todos))
     write_sitemap()
+    write_404()
     print("geschrieben: sitemap.xml, robots.txt")
     for path, n in missing:
         print(f"OFFEN: {n}x [BITTE ERGAENZEN] in {path}")
