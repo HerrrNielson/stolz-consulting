@@ -12,7 +12,7 @@ ANALYSE = dict(
     kicker="Sans engagement", title="Bilan d’orientation",
     lead="Quelques questions brèves pour mieux cerner votre situation – cela prend environ une minute.",
     close="Fermer", back="Retour", next="Continuer", progress="Étape {n} sur {m}",
-    s1_q="Où est le problème ?", s1_hint="Plusieurs choix possibles.",
+    s1_q="Quel sujet vous préoccupe actuellement ?", s1_hint="Plusieurs choix possibles.",
     topics=[
         _t("controlling", "Contrôle de gestion et pilotage financier", "Quelle est la situation de départ pour la planification et le reporting ?",
            "Je prévois encore de le mettre en place ou de le revoir", "Il y a un besoin d’agir concret", "Je cherche un deuxième avis sur des solutions existantes",
@@ -31,7 +31,7 @@ ANALYSE = dict(
            "En formation, un entretien permet de clarifier quels contenus et quel format conviennent à votre équipe."),
         dict(id="unklar", label="Pas encore clair", q="Qu’est-ce qui vous aiderait le plus en ce moment ?",
              opts=[("first", "Une première mise en perspective de ma situation"), ("second", "Un deuxième avis"), ("info", "Je souhaite d’abord m’informer")],
-             sentence="S’il n’est pas encore clair où se situe exactement le problème, c’est un bon point de départ pour un entretien – les questions peuvent être ordonnées ensemble."),
+             sentence="S’il n’est pas encore clair quel sujet est prioritaire pour vous, c’est un bon point de départ pour un entretien – les questions peuvent être ordonnées ensemble."),
     ],
     size_q="Quelle est la taille de votre entreprise ?", size_opt="(facultatif)",
     sizes=[("micro", "Très petite entreprise"), ("sme", "PME jusqu’à 50 collaborateurs"), ("large", "Entreprise plus grande")],

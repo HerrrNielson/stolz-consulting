@@ -11,7 +11,7 @@ ANALYSE = dict(
     kicker="Non-binding", title="Orientation check",
     lead="A few short questions so I can better understand your situation – it takes about a minute.",
     close="Close", back="Back", next="Next", progress="Step {n} of {m}",
-    s1_q="Where does the shoe pinch?", s1_hint="You can select more than one.",
+    s1_q="Which topic is on your mind at the moment?", s1_hint="You can select more than one.",
     topics=[
         _t("controlling", "Controlling and financial management", "What is the starting point for planning and reporting?",
            "I am still planning to set it up or rework it", "There is a concrete need to act", "I am looking for a second opinion on existing solutions",
@@ -30,7 +30,7 @@ ANALYSE = dict(
            "With training, a conversation can clarify which content and format make sense for your team."),
         dict(id="unklar", label="Not sure yet", q="What would help you most right now?",
              opts=[("first", "A first assessment of my situation"), ("second", "A second opinion"), ("info", "I would like to find out more first")],
-             sentence="If it is still unclear where exactly the shoe pinches, that is a good starting point for a conversation – the questions can be sorted out together."),
+             sentence="If it is still unclear which topic matters most to you, that is a good starting point for a conversation – the questions can be sorted out together."),
     ],
     size_q="How large is your company?", size_opt="(optional)",
     sizes=[("micro", "Micro-enterprise"), ("sme", "SME up to 50 employees"), ("large", "Larger company")],

@@ -94,9 +94,6 @@ TESTIMONIALS = []
 
 REQ = '<span class="req" aria-hidden="true">*</span>'
 ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
-ICON_PIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>'
-ICON_PHONE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>'
-ICON_MAIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>'
 
 
 # --------------------------------------------------------------------------
@@ -190,11 +187,11 @@ def logo_grid(key, lang, items):
     return '<ul class="logo-grid" data-stagger>' + "".join(out) + "</ul>"
 
 
-def marquee(key, lang, label, pause_label):
+def marquee(key, lang, label):
     items = [r for r in REFERENCES if r[1]]
     first = "".join(f"<li>{logo_img(key, lang, n, f)}</li>" for n, f in items)
     second = "".join(f'<li>{logo_img(key, lang, n, f, alt=False)}</li>' for n, f in items)
-    return (f'<div class="marquee" data-marquee data-pause-label="{esc(pause_label)}">'
+    return (f'<div class="marquee" data-marquee>'
             f'<div class="marquee__viewport">'
             f'<ul class="marquee__track" aria-label="{esc(label)}">{first}</ul>'
             f'<ul class="marquee__track" aria-hidden="true">{second}</ul></div></div>')
@@ -205,7 +202,7 @@ def svg(inner, cls=""):
     return f'<svg{c} viewBox="0 0 24 24" aria-hidden="true" focusable="false">{inner}</svg>'
 
 
-# Eigene Strichgrafik-Icons (24er Raster); Klasse "ac" = Akzentlinie in Kupfer
+# Eigene Strichgrafik-Icons (24er Raster, nur Leistungskarten); Klasse "ac" = Akzentlinie in Gold
 SERVICE_ICONS = {
     "controlling": '<path d="M3 20h18"/><path d="M6 16v-4M11 16V9M16 16v-6"/><path class="ac" d="m5 7 5-3 4 2 5-3"/>',
     "finanzierung": '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path class="ac" d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
@@ -213,18 +210,7 @@ SERVICE_ICONS = {
     "erp": '<rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path class="ac" d="M14 17.5h7M17.5 14v7"/>',
     "training": '<path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/><path class="ac" d="M22 9v6"/>',
 }
-EDU_ICONS = [
-    '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path class="ac" d="M4 21V5M9 8h6"/>',
-    '<path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/>',
-    '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path class="ac" d="M12 3c3.2 3 3.2 15 0 18M12 3c-3.2 3-3.2 15 0 18"/>',
-]
 CHEVRON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>'
-HERO_ART = ('<svg viewBox="0 0 80 56" aria-hidden="true" focusable="false"><g fill="currentColor" opacity=".85">'
-            '<rect x="4" y="34" width="12" height="18" rx="2"/><rect x="22" y="24" width="12" height="28" rx="2"/>'
-            '<rect x="40" y="30" width="12" height="22" rx="2"/><rect x="58" y="12" width="12" height="40" rx="2"/></g>'
-            '<path d="M4 22 28 12l18 6 28-14" fill="none" stroke="#c0623a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>')
-CTA_ART = ('<svg class="cta__art" viewBox="0 0 400 260" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="2">'
-           '<circle cx="400" cy="260" r="70"/><circle cx="400" cy="260" r="140"/><circle cx="400" cy="260" r="210"/><circle cx="400" cy="260" r="280"/></g></svg>')
 
 
 def icon_box(inner):
@@ -239,7 +225,6 @@ def cta_block(key, lang):
     <section class="section section--cta">
       <div class="container">
         <div class="cta reveal">
-          {CTA_ART}
           <div class="cta__text">
             <p class="eyebrow">{esc(c['eyebrow'])}</p>
             <h2 class="h2">{em(c['h2'])}</h2>{note}
@@ -308,7 +293,6 @@ def page_home(lang):
             <source type="image/webp" srcset="{a('img/portrait.webp')}">
             <img src="{a('img/portrait.jpg')}" alt="{esc(t['portrait_alt'])}" width="313" height="474" fetchpriority="high" decoding="async">
           </picture>
-          <div class="hero__art">{HERO_ART}</div>
         </div>
       </div>
     </section>
@@ -344,12 +328,12 @@ def page_home(lang):
 
     <section class="section">
       <div class="container shortprofile">
-        <div class="shortprofile__media reveal">
+        <div class="shortprofile__media reveal"><div class="frame">
           <picture>
             <source type="image/webp" srcset="{a('img/portrait.webp')}">
             <img src="{a('img/portrait.jpg')}" alt="{esc(t['portrait_alt'])}" width="313" height="474" loading="lazy" decoding="async">
           </picture>
-        </div>
+        </div></div>
         <div data-stagger>
           <p class="eyebrow reveal">{esc(t['pr_eyebrow'])}</p>
           <h2 class="h2 reveal">{esc(t['pr_h2'])}</h2>
@@ -371,7 +355,7 @@ def page_home(lang):
           <a class="link-arrow" href="{L('referenzen')}"><span>{esc(t['ref_all'])}</span>{ARROW}</a>
         </div>
       </div>
-      {marquee(k, lang, u['marquee_label'], u['marquee_pause'])}
+      {marquee(k, lang, u['marquee_label'])}
     </section>
 {cta_block(k, lang)}"""
 
@@ -431,8 +415,7 @@ def page_profil(lang):
     k, D = "profil", LANGS[lang]
     t = D["profil"]
     a = lambda p: asset(k, lang, p)
-    edu = "".join(f'<li class="card reveal">{icon_box(EDU_ICONS[i % 3])}<strong>{esc(x)}</strong><span>{esc(y)}</span></li>'
-                  for i, (x, y) in enumerate(t["edu"]))
+    edu = "".join(f'<li class="reveal"><strong>{esc(x)}</strong><span>{esc(y)}</span></li>' for x, y in t["edu"])
 
     def career(items):
         return "".join(
@@ -451,10 +434,10 @@ def page_profil(lang):
     <section class="section section--flush">
       <div class="container profile">
         <aside class="profile__aside reveal">
-          <picture>
+          <div class="frame"><picture>
             <source type="image/webp" srcset="{a('img/portrait.webp')}">
             <img src="{a('img/portrait.jpg')}" alt="{esc(t['alt'])}" width="313" height="474" decoding="async">
-          </picture>
+          </picture></div>
           <div class="profile__card">
             <p class="name">Mag. Dr. Sabine Stolz, MSc</p>
             <p class="role">{esc(t['role'])}</p>
@@ -519,10 +502,9 @@ def render_case_studies(lang, t):
 def page_referenzen(lang):
     k, D = "referenzen", LANGS[lang]
     t = D["referenzen"]
-    ficons = ["controlling", "international", "erp", "training"]
     cards = "".join(
-        f'<li class="card reveal">{icon_box(SERVICE_ICONS[ficons[i]])}<h3>{esc(h)}</h3><p>{esc(p)}</p></li>'
-        for i, (h, p) in enumerate(t["items"]))
+        f'<li class="card reveal"><h3>{esc(h)}</h3><p>{esc(p)}</p></li>'
+        for h, p in t["items"])
     groups = []
     for g in REF_GROUP_ORDER:
         items = [r for r in REFERENCES if REF_GROUP_OF.get(r[0], "weitere") == g]
@@ -608,9 +590,9 @@ def page_kontakt(lang):
           <p class="name">Stolz Consulting</p>
           <p class="role">Mag. Dr. Sabine Stolz, MSc · {esc(t['role'])}</p>
           <ul>
-            <li><span class="icon">{ICON_PHONE}</span><div><span class="k">{esc(u['phone'])}</span><a href="{c['phone_href']}">{esc(u['phone_display'])}</a></div></li>
-            <li><span class="icon">{ICON_MAIL}</span><div><span class="k">{esc(u['email'])}</span><a href="mailto:{c['email']}">{c['email']}</a></div></li>
-            <li><span class="icon">{ICON_PIN}</span><div><span class="k">{esc(u['address'])}</span><address>{c['street']}<br>{c['city']}<br>{esc(u['country'])}</address></div></li>
+            <li><span class="k">{esc(u['phone'])}</span><a href="{c['phone_href']}">{esc(u['phone_display'])}</a></li>
+            <li><span class="k">{esc(u['email'])}</span><a href="mailto:{c['email']}">{c['email']}</a></li>
+            <li><span class="k">{esc(u['address'])}</span><address>{c['street']}<br>{c['city']}<br>{esc(u['country'])}</address></li>
           </ul>
         </aside>
       </div>
@@ -792,7 +774,7 @@ def layout(key, lang, body):
   <meta name="twitter:title" content="{t_}">
   <meta name="twitter:description" content="{d_}">
   <meta name="twitter:image" content="{DOMAIN}/assets/img/og-image.jpg">
-  <meta name="theme-color" content="#f6f4ee">
+  <meta name="theme-color" content="#ffffff">
   <link rel="icon" type="image/svg+xml" href="{a('img/favicon.svg')}">
   <link rel="apple-touch-icon" href="{a('img/apple-touch-icon.png')}">
   <link rel="manifest" href="{asset(key, lang, '')[:-len('assets/')]}site.webmanifest">
@@ -899,7 +881,7 @@ def write_404():
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>404 – Stolz Consulting</title>
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#f6f4ee">
+  <meta name="theme-color" content="#ffffff">
   <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
   {pre}
   <link rel="stylesheet" href="/assets/css/fonts.css">

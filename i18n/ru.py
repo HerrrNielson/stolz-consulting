@@ -23,7 +23,6 @@ DATA = dict(
         phone="Телефон", email="Эл. почта", address="Адрес",
         imprint="Выходные данные", privacy="Конфиденциальность",
         phone_display="+43 664 5302624", country="Австрия",
-        marquee_pause="Остановить движение", marquee_play="Возобновить движение",
         marquee_label="Избранные референции",
         progress="Прогресс чтения", menu_contact="Связаться",
     ),

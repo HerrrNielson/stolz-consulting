@@ -20,7 +20,6 @@ DATA = dict(
         phone="Phone", email="Email", address="Address",
         imprint="Imprint", privacy="Privacy policy",
         phone_display="+43 664 5302624", country="Austria",
-        marquee_pause="Pause movement", marquee_play="Resume movement",
         marquee_label="Selected references",
         progress="Reading progress", menu_contact="Get in touch",
     ),

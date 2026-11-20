@@ -26,7 +26,6 @@ DATA = dict(
         phone="Téléphone", email="E-mail", address="Adresse",
         imprint="Mentions légales", privacy="Confidentialité",
         phone_display="+43 664 5302624", country="Autriche",
-        marquee_pause="Suspendre le défilement", marquee_play="Reprendre le défilement",
         marquee_label="Sélection de références",
         progress="Progression de la lecture", menu_contact="Prendre contact",
     ),

@@ -21,7 +21,6 @@ DATA = dict(
         phone="Telefon", email="E-Mail", address="Adresse",
         imprint="Impressum", privacy="Datenschutz",
         phone_display="0664/5302624", country="Österreich",
-        marquee_pause="Bewegung anhalten", marquee_play="Bewegung fortsetzen",
         marquee_label="Auswahl von Referenzen",
         progress="Lesefortschritt", menu_contact="Kontakt aufnehmen",
     ),

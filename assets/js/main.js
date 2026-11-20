@@ -1,7 +1,7 @@
 /* Stolz Consulting – Frontend-Skript (ohne Bibliotheken).
    Progressive Enhancement: Die Seite ist auch ohne dieses Skript vollständig lesbar.
    Module: Header · Menü · Sprachumschalter · Einblenden ·
-           Akkordeon-Anker · Marquee · Fortschrittsbalken · Kontaktformular
+           Akkordeon-Anker · Marquee (Hover-Pause) · Fortschrittsbalken · Kontaktformular
    ERWEITERUNG: weitere Module (z. B. Problem-Analyse-Popup) als eigene Datei in assets/js/. */
 (function () {
   "use strict";
@@ -115,31 +115,13 @@
     reveals.forEach(function (el) { io.observe(el); });
   }
 
-  /* ---------- Marquee: Pausieren per Knopf, Hover und Fokus (WCAG 2.2.2) ---------- */
+  /* ---------- Marquee: pausiert bei Hover und Tastaturfokus; bei prefers-reduced-motion steht es still (CSS) ---------- */
   document.querySelectorAll("[data-marquee]").forEach(function (m) {
     if (reduce.matches) return;
     var viewport = m.querySelector(".marquee__viewport");
-    var label = m.getAttribute("data-pause-label");
-    var bar = document.createElement("div");
-    bar.className = "marquee__bar";
-    var btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "marquee__toggle";
-    btn.setAttribute("aria-pressed", "false");
-    btn.innerHTML = '<svg viewBox="0 0 12 12" aria-hidden="true"><rect x="1" y="1" width="3.5" height="10"/><rect x="7.5" y="1" width="3.5" height="10"/></svg><span></span>';
-    btn.lastChild.textContent = label;
-    btn.addEventListener("click", function () {
-      var paused = m.classList.toggle("is-paused");
-      btn.setAttribute("aria-pressed", paused ? "true" : "false");
-    });
-    bar.appendChild(btn);
-    m.appendChild(bar);
-    if (viewport) {
-      viewport.addEventListener("mouseenter", function () { m.classList.add("is-paused"); });
-      viewport.addEventListener("mouseleave", function () {
-        if (btn.getAttribute("aria-pressed") !== "true") m.classList.remove("is-paused");
-      });
-    }
+    if (!viewport) return;
+    viewport.addEventListener("mouseenter", function () { m.classList.add("is-paused"); });
+    viewport.addEventListener("mouseleave", function () { m.classList.remove("is-paused"); });
   });
 
   /* ---------- Leistungen: Anker öffnet das passende Akkordeon ---------- */

@@ -29,7 +29,7 @@ i18n/                 Texte – eine Datei je Sprache (de.py, en.py, fr.py, ru.p
 contact.php           Handler für das Kontaktformular (versendet per PHP mail())
 assets/css/fonts.css  lokale @font-face-Regeln (Inter, Source Serif 4; latin, latin-ext, cyrillic)
 assets/css/style.css  Stylesheet (Tokens, Komponenten, Motion, Responsive)
-assets/js/main.js     Header, Menü, Sprachumschalter, Einblenden, Akkordeon-Anker, Marquee, Formular
+assets/js/main.js     Header, Menü, Sprachumschalter, Einblenden, Akkordeon-Anker, Logo-Laufband (Hover-Pause), Formular
 assets/fonts/         WOFF2-Schriften (selbst gehostet, DSGVO-freundlich)
 assets/img/           Optimierte Bilder; original/ = unveränderte Downloads
 sitemap.xml, robots.txt, 404.html   werden von build.py erzeugt
@@ -51,7 +51,7 @@ Es werden keine Zusatzpakete benötigt (nur Python 3).
 ## Texte und Sprachen
 
 - Texte stehen ausschließlich in `i18n/<sprache>.py` (ein `DATA`-Dictionary je Sprache).
-  `*Wort*` in Überschriften wird zu kursivem Petrol-Akzent.
+  `*Wort*` in Überschriften wird zu kursivem Gold-Akzent (unterstrichen).
 - **Neue Sprache:** `i18n/xx.py` nach dem Muster von `de.py` anlegen, in `i18n/__init__.py`
   in `LANGUAGES` eintragen, bauen. hreflang, Sitemap und Umschalter folgen automatisch.
 - Französische Typografie (geschützte Leerzeichen vor `? ! : ;`) setzt `build.py` automatisch.
@@ -116,17 +116,21 @@ Noch offen: Mailversand auf dem Zielserver testen (`contact.php` wurde lokal nic
 
 ## Design und Technik
 
-Designsystem „Papier & Petrol“ (Redesign nach Feedback, Tokens oben in `assets/css/style.css`):
+Designsystem „Weiß · Beige · Gold“ (Farbwelt der ursprünglichen Website; Tokens oben in `assets/css/style.css`):
 
-- **Farben:** Papier `#f6f4ee` (Grund), `#efece3` (Wechselfläche), Petrol `#14414b` (Hauptfarbe, Buttons, Footer `#0d2d35`),
-  helle Petrol-Tönung `#e3ecea` (Icons, CTA-Fläche), ein Akzent Kupfer `#c0623a` (nur Linien, Icons, kleine Highlights;
-  als Text `#9c4524`), Text `#10232b`. Keine Verläufe, keine Glow-/Glanz-Effekte; dunkle Fläche nur im Footer (flach).
-  Kontraste ≥ AA (Petrol/Papier ≈ 10:1, Muted ≈ 6,5:1, Akzent-Text ≈ 5:1).
+- **Farben:** Weiß `#ffffff` (Grund), Creme `#f5f1ea` (Wechselflächen, Eingabefelder), Beige `#ece5d8` (Footer), zarte Gold-Tönung
+  `#f3ebdb` (Icon-Flächen, CTA-Box), Gold `#b88b4a` (Hauptbuttons mit dunklem Text `#1f1810`, Linien, Icons), tieferes Gold
+  `#8f6934` (große Zahlen, Hover), Gold als Text `#7a5727`, Text/aktive Elemente warmes Dunkelbraun `#2a2118`, Muted `#5f594c`.
+  Keine Verläufe, keine Glow-/Glanz-Effekte, keine dunklen Flächen; der Footer ist eine flache beige Fläche.
+  Kontraste (WCAG): Text/Weiß ≈ 15,8:1, Muted/Creme ≈ 6,2:1, Gold-Text/Weiß ≈ 6,5:1 (Creme ≈ 5,8:1), Button dunkel/Gold ≈ 5,7:1.
+  Favicon, Touch-Icons, Manifest und `og-image.jpg` folgen derselben Palette.
 - **Schriften:** Source Serif 4 (Überschriften, Gewicht 500) und Inter (Text) – **lokal gehostet** (`assets/fonts/`,
   `font-display: swap`, Preload je Sprache, Kyrillisch für RU). Keine Verbindung zu Google Fonts.
-- **Prinzipien:** ruhig und viel Weißraum, 12er-Raster, flache Karten (Radius 20 px, 1-px-Linie statt Schatten),
-  ein Hero je Startseite, Details in Akkordeons (`<details>`), Prozess-Diagramm in 3 Schritten, eigene Inline-SVG-Icons
-  (`SERVICE_ICONS`, `EDU_ICONS` in `build.py`), nur belegte Kennzahlen, keine erfundenen Inhalte.
+- **Prinzipien:** ruhig und viel Weißraum, flache Karten (Radius 16 px, 1-px-Linie), runde Buttons, Serif-Überschriften im Gewicht 400,
+  Porträts mit feinem, versetztem Goldrahmen (Hero: Bogenform), ein Hero je Startseite, Details in Akkordeons (`<details>`),
+  Prozess-Diagramm in 3 Schritten, nur belegte Kennzahlen, keine erfundenen Inhalte. **Icons nur sparsam:** eigene Inline-SVG-Icons
+  (`SERVICE_ICONS` in `build.py`) nur bei den Leistungskarten; Referenz-Schwerpunkte (Nummern), Ausbildung (Haarlinien),
+  Kontaktdaten (Beschriftung) und Listenpunkte (feine Goldlinie) kommen ohne Icons aus.
 - **Umbrüche:** keine automatische Silbentrennung (`hyphens: manual`, kein `&shy;` im Einsatz), `overflow-wrap: normal`
   (nur Mail-/Telefonlinks dürfen notfalls umbrechen), `text-wrap: balance` (Überschriften, Buttons) bzw. `pretty` (Text),
   `clamp()`-Schriftgrößen, ab 380 px etwas kleinere Überschriften (lange Wörter in RU). Prüfung per Skript: Wörter, die über
@@ -136,7 +140,7 @@ Designsystem „Papier & Petrol“ (Redesign nach Feedback, Tokens oben in `asse
   alle Inhalte sichtbar. Anker auf der Leistungsseite (`#erp` …) öffnen das passende Akkordeon.
 - **CSP:** keine Inline-Styles im HTML (`style-src 'self'`); Abstände über Klassen.
 - Barrierefreiheit: Skip-Link, Landmarks, sichtbare Fokus-Stile, Pfeiltasten im Sprachumschalter, Menü mit Fokusfalle und Esc,
-  Marquee pausierbar, Akkordeons nativ per Tastatur bedienbar.
+  Logo-Laufband pausiert bei Hover und steht bei `prefers-reduced-motion` still (Logos in Originalfarbe), Akkordeons nativ per Tastatur bedienbar.
 
 ## Veröffentlichen
 

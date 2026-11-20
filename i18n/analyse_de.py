@@ -17,7 +17,7 @@ ANALYSE = dict(
     kicker="Unverbindlich", title="Orientierungs-Check",
     lead="Ein paar kurze Fragen, damit ich Ihre Situation besser einordnen kann – es dauert etwa eine Minute.",
     close="Schließen", back="Zurück", next="Weiter", progress="Schritt {n} von {m}",
-    s1_q="Wo drückt der Schuh?", s1_hint="Mehrfachauswahl möglich.",
+    s1_q="Welches Thema beschäftigt Sie derzeit?", s1_hint="Mehrfachauswahl möglich.",
     topics=[
         _t("controlling", "Controlling und Finanzsteuerung", "Wie ist die Ausgangslage bei Planung und Reporting?",
            "Ich plane den Aufbau oder Umbau noch", "Es gibt konkreten Handlungsbedarf", "Ich suche eine zweite Meinung zu bestehenden Lösungen",
@@ -36,7 +36,7 @@ ANALYSE = dict(
            "Bei Schulung und Training lässt sich im Gespräch klären, welche Inhalte und welches Format für Ihr Team sinnvoll sind."),
         dict(id="unklar", label="Noch unklar", q="Was würde Ihnen jetzt am meisten helfen?",
              opts=[("first", "Eine erste Einordnung meiner Situation"), ("second", "Eine zweite Meinung"), ("info", "Ich möchte mich zunächst informieren")],
-             sentence="Wenn noch unklar ist, wo genau der Schuh drückt, ist das ein guter Ausgangspunkt für ein Gespräch – die Fragen lassen sich gemeinsam sortieren."),
+             sentence="Wenn noch unklar ist, welches Thema für Sie im Vordergrund steht, ist das ein guter Ausgangspunkt für ein Gespräch – die Fragen lassen sich gemeinsam sortieren."),
     ],
     size_q="Wie groß ist Ihr Unternehmen?", size_opt="(optional)",
     sizes=[("micro", "Kleinstunternehmen"), ("sme", "KMU bis 50 Mitarbeitende"), ("large", "Größeres Unternehmen")],
