@@ -70,8 +70,33 @@ Es werden keine Zusatzpakete benötigt (nur Python 3).
 
 ## Erweiterungspunkte
 
-- **Popup-Modul (Problem-Analyse):** eigenes Skript `assets/js/popup.js` in `EXTRA_SCRIPTS`,
-  Styles in `EXTRA_STYLES`, Markup über `EXTRA_BODY` (alle in `build.py`).
+- Weitere Skripte/Styles/Markup für alle Seiten: `EXTRA_SCRIPTS`, `EXTRA_STYLES`, `EXTRA_BODY` in `build.py`.
+
+## Orientierungs-Check (Popup, Paket 3)
+
+Dezenter Dialog „Orientierungs-Check“ in 4 Schritten: Thema (Mehrfachauswahl, „Noch unklar“ schließt andere aus) →
+Folgefrage zum Thema + optional Unternehmensgröße → kurze, allgemeine Rückmeldung → Kontakt (Name, E-Mail, optional
+Telefon/Nachricht, Datenschutz-Checkbox) → Erfolgs- bzw. Fehleransicht. Ziel ist ein *unverbindliches Orientierungsgespräch*
+(kein „gratis“, kein Countdown, keine Knappheit).
+
+- **Dateien:** `assets/js/analyse.js`, `assets/css/analyse.css`, Texte in `i18n/analyse_<de|en|fr|ru>.py`
+  (von `build.py` als JSON `#analyse-data` je Seite eingebettet – im JS stehen keine Texte), `analyse_block()` in `build.py`,
+  Handler `contact.php` (`source=analyse`).
+- **Auslöser:** frühestens nach 40 s **oder** ca. 50 % Scrolltiefe (was zuerst eintritt), nur einmal pro Besuch
+  (`sessionStorage` `sc-analyse-shown`), nach dem Schließen 14 Tage Pause (`localStorage` `sc-analyse-closed`).
+  Nicht auf Impressum, Datenschutz und Kontakt (`NO_ANALYSE` in `build.py`). Dauerhafter Einstieg: Button unten rechts
+  „Orientierungsgespräch“ (ohne JavaScript ein Link zur Kontaktseite); er öffnet den Dialog immer.
+- **Testen:** `?analyse=now` öffnet sofort (ignoriert die Speicherregeln), `?analyse=reset` löscht die Einträge;
+  in der Konsole `StolzAnalyse.open()` / `StolzAnalyse.reset()`. Werte (40 s, 0,5, 14 Tage) stehen oben in `analyse.js`.
+- **Verhalten/Barrierefreiheit:** `role="dialog"`, `aria-modal`, Fokusfalle, Hintergrund `inert`, Scroll-Lock, Schließen per
+  X/ESC/Klick auf den Hintergrund, Fokus zurück an den Auslöser, Fortschrittsanzeige (`role="progressbar"`), Zurück-Button,
+  Auswahl über echte Checkboxen/Radios, `prefers-reduced-motion`, ab 600 px Breite zentriert, darunter Bottom-Sheet (getestet bis 320 px).
+- **Datenschutz:** keine Tracker, keine Cookies, keine externen Dienste. Antworten liegen nur im Arbeitsspeicher und gehen
+  erst beim Absenden an `contact.php`. Die Datenschutzseite hat in allen Sprachen einen Abschnitt dazu (rechtlich zu prüfen).
+- **Mail:** `contact.php` übersetzt die IDs über Whitelists (`ANALYSE_TOPICS/PHASES/SIZES`) in einen übersichtlichen Block
+  „Orientierungs-Check“; bei `source=analyse` ist die Nachricht optional. Neue Themen: in `analyse_<sprache>.py` (alle 4) und
+  in der Whitelist ergänzen.
+- **Ungeprüft:** echter Mailversand und `php -l` (PHP lokal nicht installiert); FR/RU-Texte brauchen Muttersprachler/innen-Prüfung.
 
 ## Kontaktformular
 

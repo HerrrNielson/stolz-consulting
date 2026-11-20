@@ -20,6 +20,11 @@ Auszeichnung *Text* in Überschriften wird zu <em>Text</em>.
 Deutsch liegt unter /, alle anderen Sprachen unter /<code>/.
 """
 from . import de, en, fr, ru
+from . import analyse_de, analyse_en, analyse_fr, analyse_ru
+
+# Texte des Orientierungs-Checks (Popup) liegen in analyse_<sprache>.py und hängen als DATA["analyse"] an
+for _d, _a in ((de, analyse_de), (en, analyse_en), (fr, analyse_fr), (ru, analyse_ru)):
+    _d.DATA["analyse"] = _a.ANALYSE
 
 LANGUAGES = [de.DATA, en.DATA, fr.DATA, ru.DATA]
 DEFAULT_LANG = "de"

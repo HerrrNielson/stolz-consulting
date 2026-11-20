@@ -9,6 +9,9 @@
  * - Pflichtfelder: name, email, message, consent. Honeypot-Feld: "website" (muss leer bleiben).
  * - Header-Injection: Zeilenumbrüche in Name/E-Mail/Betreff führen zur Ablehnung; im Mail-Header
  *   stehen nur feste Werte bzw. die validierte E-Mail-Adresse.
+ * - Orientierungs-Check (Popup, assets/js/analyse.js): gleiche Felder plus source=analyse, analyse_topics
+ *   (kommagetrennte IDs), analyse_phase, analyse_size. Die Nachricht ist dort optional. IDs werden nur über
+ *   die Whitelists unten in Klartext (Deutsch) für die Mail übersetzt; unbekannte Werte werden ignoriert.
  * RECHTLICH/DATENSCHUTZ: von Fachperson zu prüfen (Einwilligungsnachweis, Speicherdauer der Mails).
  */
 
@@ -40,6 +43,28 @@ const MESSAGES = [
         'invalid' => 'Пожалуйста, заполните все обязательные поля, укажите действительный адрес электронной почты и подтвердите политику конфиденциальности.',
         'error'   => 'К сожалению, сообщение не удалось отправить. Пожалуйста, повторите попытку позже или напишите напрямую на office@stolz-consulting.net.',
     ],
+];
+
+// Orientierungs-Check: erlaubte IDs -> Klartext für die Mail an die Beraterin (immer Deutsch)
+const ANALYSE_TOPICS = [
+    'controlling'   => 'Controlling und Finanzsteuerung',
+    'finanzierung'  => 'Finanzierung',
+    'international' => 'Wachstum und Internationalisierung',
+    'erp'           => 'ERP und IT-Prozesse',
+    'training'      => 'Schulung und Training',
+    'unklar'        => 'Noch unklar',
+];
+const ANALYSE_PHASES = [
+    'plan'   => 'Plant noch',
+    'act'    => 'Konkreter Handlungsbedarf',
+    'second' => 'Sucht eine zweite Meinung',
+    'first'  => 'Wünscht eine erste Einordnung',
+    'info'   => 'Möchte sich zunächst informieren',
+];
+const ANALYSE_SIZES = [
+    'micro' => 'Kleinstunternehmen',
+    'sme'   => 'KMU bis 50 Mitarbeitende',
+    'large' => 'Größeres Unternehmen',
 ];
 
 function respond(int $status, bool $ok, string $code, string $lang): void {
@@ -78,6 +103,7 @@ $phone   = field('phone', 60);
 $subject = field('subject', 160);
 $message = field('message', 5000);
 $consent = field('consent', 5) !== '';
+$analyse = field('source', 20) === 'analyse';
 
 // Header-Injection: einzeilige Felder dürfen keine Zeilenumbrüche enthalten -> ablehnen
 foreach ([$name, $company, $email, $phone, $subject] as $single) {
@@ -86,8 +112,21 @@ foreach ([$name, $company, $email, $phone, $subject] as $single) {
     }
 }
 
-if ($name === '' || $message === '' || !$consent || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+// Beim Orientierungs-Check ist die Nachricht optional
+if ($name === '' || ($message === '' && !$analyse) || !$consent || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     respond(422, false, 'invalid', $lang);
+}
+
+$topics = [];
+if ($analyse) {
+    foreach (explode(',', field('analyse_topics', 120)) as $id) {
+        if (isset(ANALYSE_TOPICS[$id]) && !in_array(ANALYSE_TOPICS[$id], $topics, true)) {
+            $topics[] = ANALYSE_TOPICS[$id];
+        }
+    }
+    $phase = ANALYSE_PHASES[field('analyse_phase', 20)] ?? '-';
+    $size  = ANALYSE_SIZES[field('analyse_size', 20)] ?? '-';
+    $subject = 'Orientierungsgespräch (Orientierungs-Check)';
 }
 
 $mailSubject = 'Website-Anfrage' . ($subject !== '' ? ': ' . $subject : '') . ' (' . strtoupper($lang) . ')';
@@ -99,7 +138,14 @@ $body .= "E-Mail:      $email\n";
 $body .= "Telefon:     " . ($phone !== '' ? $phone : '-') . "\n";
 $body .= "Sprache:     " . strtoupper($lang) . "\n";
 $body .= "Einwilligung Datenschutzerklärung: ja (" . date('Y-m-d H:i:s T') . ")\n\n";
-$body .= "Nachricht:\n$message\n";
+if ($analyse) {
+    $body .= "--- Orientierungs-Check (Angaben des Besuchers) ---\n";
+    $body .= "Thema(en):    " . ($topics ? implode('; ', $topics) : '-') . "\n";
+    $body .= "Situation:    $phase\n";
+    $body .= "Größe:        $size\n";
+    $body .= "Wunsch:       unverbindliches Orientierungsgespräch\n\n";
+}
+$body .= "Nachricht:\n" . ($message !== '' ? $message : '-') . "\n";
 
 $headers = [
     'From: Stolz Consulting Website <' . FROM . '>',

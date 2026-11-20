@@ -15,8 +15,8 @@ Wo liegt was?
 Erweiterungspunkte (siehe Markierungen "ERWEITERUNG" / "TODO" unten):
   * Fallbeispiele und Kundenstimmen: CASE_STUDIES / TESTIMONIALS befüllen (siehe unten) –
     bis dahin wird nichts davon ausgegeben.
-  * Popup-Modul (Problem-Analyse): Markup über EXTRA_BODY, Skript über EXTRA_SCRIPTS
-    (z. B. assets/js/popup.js), Styles in assets/css/popup.css via EXTRA_STYLES.
+  * Orientierungs-Check (Popup): assets/js/analyse.js + assets/css/analyse.css, Texte in
+    i18n/analyse_<sprache>.py, Markup/JSON aus analyse_block() (siehe README).
 
 Inhalte stammen von https://www.stolz-consulting.net/ (Stand Nov. 2026).
 """
@@ -41,9 +41,12 @@ CONTACT = {
 }
 
 # ERWEITERUNG: Skripte/Styles/Markup, die auf jeder Seite geladen werden sollen
-EXTRA_STYLES = []   # z. B. ["css/popup.css"]
-EXTRA_SCRIPTS = []  # z. B. ["js/popup.js"]
-EXTRA_BODY = ""     # z. B. Popup-Container vor </body>
+EXTRA_STYLES = ["css/analyse.css"]  # Orientierungs-Check (Popup)
+EXTRA_SCRIPTS = ["js/analyse.js"]
+EXTRA_BODY = ""                     # weiteres Markup vor </body>; das Popup-Markup erzeugt analyse_block()
+
+# Seiten ohne Orientierungs-Check (Popup und Einstiegsbutton)
+NO_ANALYSE = {"impressum", "datenschutz", "kontakt"}
 
 # Referenzen in der Reihenfolge des Originals; None = kein Logo vorhanden
 REFERENCES = [
@@ -689,6 +692,23 @@ def font_preloads(key, lang):
         for n in names)
 
 
+ICON_COMPASS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>'
+
+
+def analyse_block(key, lang):
+    """Einstiegsbutton + eingebettete Texte (JSON) für assets/js/analyse.js.
+    Ohne JavaScript bleibt der Button ein normaler Link zur Kontaktseite."""
+    if key in NO_ANALYSE:
+        return ""
+    D = LANGS[lang]
+    t = D["analyse"]
+    cfg = dict(t, lang=lang, action=asset(key, lang, "")[:-len("assets/")] + "contact.php",
+               contact_url=rel(key, lang, "kontakt"), privacy_url=rel(key, lang, "datenschutz"), mail_to=CONTACT["email"])
+    data = json.dumps(cfg, ensure_ascii=False).replace("</", "<\\/")
+    return f"""<a class="analyse-fab" href="{rel(key, lang, 'kontakt')}" data-analyse-open aria-haspopup="dialog" title="{esc(t['fab_title'])}">{ICON_COMPASS}<span>{esc(t['fab'])}</span></a>
+  <script type="application/json" id="analyse-data">{data}</script>"""
+
+
 def layout(key, lang, body):
     D = LANGS[lang]
     u = D["ui"]
@@ -790,6 +810,7 @@ def layout(key, lang, body):
       </div>
     </div>
   </footer>
+  {analyse_block(key, lang)}
   {EXTRA_BODY}
   <script src="{a('js/main.js')}" defer></script>{extra_js}
 </body>
