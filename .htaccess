@@ -18,7 +18,7 @@ AddDefaultCharset UTF-8
   RewriteRule ^ https://www.stolz-consulting.net%{REQUEST_URI} [L,R=301]
 
   # Build-/Quelldateien nicht ausliefern
-  RewriteRule ^(build\.py|i18n/|README\.md|\.gitignore|\.claude/|__pycache__/) - [F,L]
+  RewriteRule ^(build\.py|mapdata\.py|tools/|i18n/|README\.md|\.gitignore|\.claude/|__pycache__/) - [F,L]
 </IfModule>
 
 # --- Sicherheits-Header ---
