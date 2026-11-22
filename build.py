@@ -738,7 +738,6 @@ def page_impressum(lang):
         <dl>
           <dt>{esc(t['k_phone'])}</dt><dd><a href="{c['phone_href']}">{esc(u['phone_display'])}</a></dd>
           <dt>{esc(t['k_email'])}</dt><dd><a href="mailto:{c['email']}">{c['email']}</a></dd>
-          <dt>{esc(t['k_web'])}</dt><dd><a href="{DOMAIN}/">{DOMAIN}/</a></dd>
           <dt>{esc(t['k_owner'])}</dt><dd>{esc(t['v_owner'])}</dd>
           {todo}
         </dl>
