@@ -91,7 +91,7 @@ a[href^="mailto:"], a[href^="tel:"], .url { overflow-wrap: anywhere; }   /* einz
 .h1 { font-size: var(--fs-h1); line-height: 1.08; letter-spacing: -.02em; }
 .h2 { font-size: var(--fs-h2); line-height: 1.15; }
 .h3 { font-size: var(--fs-h3); line-height: 1.25; }
-.h1 em, .h2 em { font-style: italic; color: var(--gold-text); text-decoration: underline; text-decoration-color: var(--gold); text-decoration-thickness: 2px; text-underline-offset: .14em; text-decoration-skip-ink: none; }
+.h1 em, .h2 em { font-style: italic; color: var(--gold-text); } /* keine Unterstreichung: sähe sonst wie ein Link aus */
 .lead { font-size: var(--fs-lead); line-height: 1.6; color: var(--muted); max-width: 48ch; }
 .prose p + p { margin-top: 1em; }
 
@@ -144,6 +144,10 @@ a[href^="mailto:"], a[href^="tel:"], .url { overflow-wrap: anywhere; }   /* einz
 .brand__sub { margin-top: 5px; font-size: .6875rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--gold-text); }
 
 .nav { display: flex; align-items: center; gap: clamp(20px, 3vw, 40px); }
+/* Breite Ansicht ohne JS: das popover-Attribut bleibt stehen, die Navigation bleibt trotzdem in der Zeile */
+@media (min-width: 901px) {
+  .nav[popover] { position: static; inset: auto; width: auto; height: auto; margin: 0; padding: 0; border: 0; overflow: visible; color: inherit; background: none; }
+}
 .nav__list { display: flex; gap: clamp(18px, 2.6vw, 34px); }
 .nav__num, .nav__foot { display: none; }
 .nav__link { position: relative; display: inline-block; padding: 8px 0; font-size: .9375rem; font-weight: 500; color: var(--ink); }
@@ -457,15 +461,23 @@ html:not([lang="ru"]) .site-footer__links a[lang="ru"] { font-family: Arial, "He
 @media (max-width: 900px) {
   :root { --header-h: 68px; }
   .nav-toggle { display: block; }
+  /* Natives Popover (popover="auto"): ESC, Klick daneben und Fokus-Rückgabe übernimmt der Browser.
+     .\:popover-open ist die Klasse des JS-Fallbacks für Browser ohne Popover-API. */
   .nav {
-    position: fixed; inset: var(--header-h) 0 0 0; z-index: 1; overflow-y: auto;
+    position: fixed; inset: var(--header-h) 0 0 0; z-index: 1; overflow-y: auto; overscroll-behavior: contain;
+    width: auto; height: auto; max-width: none; max-height: none; margin: 0; border: 0; color: inherit;
     flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0;
     padding: 12px var(--gutter) 32px; background: var(--white);
-    opacity: 0; visibility: hidden; transform: translateY(-8px);
-    transition: opacity .25s, transform .3s var(--ease), visibility 0s .3s;
+    opacity: 0; transform: translateY(-8px);
+    transition: opacity .25s, transform .3s var(--ease), display .3s, overlay .3s;
+    transition-behavior: allow-discrete;
   }
-  .nav-open .nav { opacity: 1; visibility: visible; transform: none; transition: opacity .25s, transform .3s var(--ease), visibility 0s; }
-  .nav-open { overflow: hidden; }
+  .nav:not(:is(:popover-open, .\:popover-open)) { display: none; }
+  .nav:is(:popover-open, .\:popover-open) {
+    display: flex; opacity: 1; transform: none;
+    @starting-style { opacity: 0; transform: translateY(-8px); }
+  }
+  .nav-open { overflow: hidden; } /* Vollbild-Menü: Seite dahinter nicht mitscrollen (iOS ignoriert overscroll-behavior hier) */
   .nav__list { flex-direction: column; gap: 0; }
   .nav__link { display: flex; align-items: baseline; gap: 16px; width: 100%; padding: 16px 0; font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.5rem, 1.2rem + 2vw, 2rem); line-height: 1.15; border-bottom: 1px solid var(--line); }
   .nav__link::after { display: none; }

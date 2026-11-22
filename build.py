@@ -904,9 +904,9 @@ def layout(key, lang, body):
         <span class="brand__name">Stolz Consulting</span>
         <span class="brand__sub">{esc(u['brand_sub'])}</span>
       </a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav"
-              aria-label="{esc(u['menu_open'])}" data-label-open="{esc(u['menu_open'])}" data-label-close="{esc(u['menu_close'])}"><span></span></button>
-      <nav class="nav" id="nav" aria-label="{esc(u['nav_label'])}">
+      <button class="nav-toggle" type="button" popovertarget="nav" aria-controls="nav"
+              aria-label="{esc(u['menu_open'])}" data-label-open="{esc(u['menu_open'])}" data-label-close="{esc(u['menu_close'])}"><span aria-hidden="true"></span></button>
+      <nav class="nav" id="nav" popover="auto" aria-label="{esc(u['nav_label'])}">
         <ul class="nav__list">{nav}</ul>
         {switcher(key, lang)}
         <div class="nav__foot">
