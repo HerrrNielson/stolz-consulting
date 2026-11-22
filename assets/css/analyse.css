@@ -15,22 +15,31 @@
 .analyse-fab:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 .nav-open .analyse-fab { display: none; }
 
-/* ---------- Dialog ---------- */
-html.analyse-lock { overflow: hidden; padding-right: var(--analyse-sbw, 0px); }
-.analyse { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px; }
-.analyse[hidden] { display: none; }
-.analyse__backdrop { position: absolute; inset: 0; background: rgba(42, 33, 24, .5); opacity: 0; transition: opacity .3s ease; }
-.analyse.is-open .analyse__backdrop { opacity: 1; }
-
+/* ---------- Dialog (natives <dialog>, geöffnet mit showModal()) ----------
+   Einblenden: @starting-style. Ausblenden: [data-closing] (JS schließt nach dem Übergang).
+   Kein overflow:hidden auf <html>: overscroll-behavior hält das Scrollen im Dialog. */
 .analyse__dialog {
-  position: relative; display: flex; flex-direction: column;
-  width: min(100%, 640px); max-height: min(92vh, 760px); max-height: min(92dvh, 760px);
+  flex-direction: column; margin: auto; padding: 0; border: 0;
+  width: min(100% - 32px, 640px); max-width: none; max-height: min(92vh, 760px); max-height: min(92dvh, 760px);
   background: var(--paper); color: var(--ink); border-radius: var(--radius-lg);
   border-top: 3px solid var(--gold); box-shadow: 0 30px 70px -30px rgba(42, 33, 24, .5);
+  overscroll-behavior: contain;
   opacity: 0; transform: translateY(18px) scale(.985);
   transition: opacity .3s ease, transform .45s var(--ease);
 }
-.analyse.is-open .analyse__dialog { opacity: 1; transform: none; }
+.analyse__dialog[open] { display: flex; }
+.analyse__dialog[open]:not([data-closing]) {
+  opacity: 1; transform: none;
+  @starting-style { opacity: 0; transform: translateY(18px) scale(.985); }
+}
+.analyse__dialog::backdrop {
+  background: rgba(42, 33, 24, 0); overflow: hidden; overscroll-behavior: contain;
+  transition: background-color .3s ease;
+}
+.analyse__dialog[open]:not([data-closing])::backdrop {
+  background: rgba(42, 33, 24, .5);
+  @starting-style { background: rgba(42, 33, 24, 0); }
+}
 .analyse__dialog:focus { outline: none; }
 
 .analyse__x {
@@ -71,7 +80,7 @@ html.analyse-lock { overflow: hidden; padding-right: var(--analyse-sbw, 0px); }
 .analyse__fb-list li::before { content: ""; position: absolute; left: 2px; top: .85em; width: 12px; height: 1.5px; background: var(--gold); }
 
 .analyse__q { display: block; margin: 0 0 6px; font: 400 clamp(1.3rem, 1.1rem + .9vw, 1.65rem)/1.25 var(--font-serif); }
-.analyse__q:focus, .analyse h3:focus { outline: none; }
+.analyse__q:focus, .analyse__dialog h3:focus { outline: none; }
 h3.analyse__q { margin-bottom: 12px; }
 .analyse__set { margin: 0 0 18px; padding: 0; border: 0; min-width: 0; }
 .analyse__legend { display: block; width: 100%; padding: 0; margin-bottom: 10px; }
@@ -138,8 +147,8 @@ h3.analyse__q { margin-bottom: 12px; }
 
 /* ---------- Mobile: Bottom-Sheet ---------- */
 @media (max-width: 600px) {
-  .analyse { place-items: end center; padding: 0; }
-  .analyse__dialog { width: 100%; max-height: 94vh; max-height: 94dvh; border-radius: 18px 18px 0 0; transform: translateY(40px); }
+  .analyse__dialog { margin: auto 0 0; width: 100%; max-height: 94vh; max-height: 94dvh; border-radius: 18px 18px 0 0; transform: translateY(40px); }
+  .analyse__dialog[open]:not([data-closing]) { @starting-style { transform: translateY(40px); } }
   .analyse__head { padding-top: 22px; }
   .analyse__grid, .analyse__row, .analyse__chips { grid-template-columns: 1fr; }
   .analyse__opt-label, .analyse__chips .analyse__opt-label { min-height: 56px; }
@@ -161,7 +170,7 @@ h3.analyse__q { margin-bottom: 12px; }
 @media (max-height: 520px) and (orientation: landscape) { .analyse__dialog { max-height: 100vh; max-height: 100dvh; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .analyse__backdrop, .analyse__dialog, .analyse__panel, .analyse__bar span::after, .analyse-fab { transition: none !important; animation: none !important; }
+  .analyse__dialog::backdrop, .analyse__dialog, .analyse__panel, .analyse__bar span::after, .analyse-fab { transition: none !important; animation: none !important; }
   .analyse__dialog { transform: none; }
   .analyse-fab:hover { transform: none; }
 }
