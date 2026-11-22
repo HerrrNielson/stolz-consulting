@@ -143,6 +143,7 @@ h3.analyse__q { margin-bottom: 12px; }
   .analyse__head { padding-top: 22px; }
   .analyse__grid, .analyse__row, .analyse__chips { grid-template-columns: 1fr; }
   .analyse__opt-label, .analyse__chips .analyse__opt-label { min-height: 56px; }
+  .tile-br, .tile-h { display: none; } /* einspaltig ist genug Platz: kein erzwungener Umbruch */
   .analyse__actions { padding-bottom: max(18px, env(safe-area-inset-bottom)); border-radius: 0; }
   .analyse__actions .btn { flex: 1 1 100%; order: 3; }
   .analyse__back { order: 1; }

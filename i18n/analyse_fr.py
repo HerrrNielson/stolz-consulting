@@ -34,7 +34,7 @@ ANALYSE = dict(
              sentence="S’il n’est pas encore clair quel sujet est prioritaire pour vous, c’est un bon point de départ pour un entretien – les questions peuvent être ordonnées ensemble."),
     ],
     size_q="Quelle est la taille de votre entreprise ?", size_opt="(facultatif)",
-    sizes=[("micro", "Très petite entreprise"), ("sme", "PME jusqu’à 50 collaborateurs"), ("large", "Entreprise plus grande")],
+    sizes=[("micro", "Très petite |entreprise"), ("sme", "PME jusqu’à 50 collaborateurs"), ("large", "Entreprise plus grande")],
     s3_q="Une première mise en perspective", fb_intro="Votre sélection – {topics} – peut être bien cernée lors d’un entretien.",
     fb_kind=dict(
         plan="Si vous êtes encore en phase de planification, un échange précoce est souvent utile : les questions peuvent être ordonnées avant que les décisions ne se présentent.",
@@ -42,7 +42,7 @@ ANALYSE = dict(
         second="Un deuxième avis peut aider à situer des réflexions ou des offres existantes – de façon factuelle et sans parti pris.",
         first="Une première mise en perspective est un bon début, sans que vous ayez à vous engager.",
         info="Vous pouvez d’abord vous informer – un entretien s’y prête aussi, sans aucune obligation."),
-    fb_close="Un entretien d’orientation est sans engagement. Nous clarifions ensemble si et comment je peux vous soutenir utilement – toute question ne nécessite pas un conseil.",
+    fb_close="Un entretien d’orientation est sans engagement. Nous clarifions ensemble si et comment je peux vous soutenir utilement.",
     fb_note="Vos indications ne sont transmises que lorsque vous envoyez le formulaire à l’étape suivante.",
     cta="Demander un entretien d’orientation", direct="Écrire directement", **{"and": " et "},
     s4_q="Comment puis-je vous joindre ?", s4_lead="Je vous contacterai personnellement pour convenir d’un rendez-vous pour l’entretien d’orientation.",

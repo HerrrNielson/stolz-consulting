@@ -88,6 +88,8 @@ Telefon/Nachricht, Datenschutz-Checkbox) → Erfolgs- bzw. Fehleransicht. Ziel i
   (`sessionStorage` `sc-analyse-shown`), nach dem Schließen 14 Tage Pause (`localStorage` `sc-analyse-closed`).
   Nicht auf Impressum, Datenschutz und Kontakt (`NO_ANALYSE` in `build.py`). Dauerhafter Einstieg: Button unten rechts
   „Orientierungsgespräch“ (ohne JavaScript ein Link zur Kontaktseite); er öffnet den Dialog immer.
+- **Sperre zurücksetzen (wichtig beim Testen):** Nach dem Schließen gilt 14 Tage Ruhe, pro Besuch öffnet sich der Dialog nur einmal. Wer lokal getestet und ihn geschlossen hat, sieht ihn deshalb nicht mehr automatisch. Zurücksetzen: URL `?analyse=reset` aufrufen, oder Konsole `StolzAnalyse.reset()`, oder `sessionStorage.removeItem("sc-analyse-shown"); localStorage.removeItem("sc-analyse-closed")`. In einem Hintergrund-Tab wartet der Auslöser, bis der Tab sichtbar ist.
+- **Größen-Kacheln:** Umbruchstelle per `|` im Label (`sizes` in `analyse_<sprache>.py`, z. B. `Kleinst|unternehmen`); ab 3 Spalten (>600 px) wird dort umgebrochen (mit Bindestrich), einspaltig nicht.
 - **Testen:** `?analyse=now` öffnet sofort (ignoriert die Speicherregeln), `?analyse=reset` löscht die Einträge;
   in der Konsole `StolzAnalyse.open()` / `StolzAnalyse.reset()`. Werte (40 s, 0,5, 14 Tage) stehen oben in `analyse.js`.
 - **Verhalten/Barrierefreiheit:** `role="dialog"`, `aria-modal`, Fokusfalle, Hintergrund `inert`, Scroll-Lock, Schließen per
@@ -121,14 +123,14 @@ Designsystem „Weiß · Beige · Gold“ (Farbwelt der ursprünglichen Website;
 - **Farben:** Weiß `#ffffff` (Grund) und **ein** Beige `#f5f1ea` (Wechselflächen, Karten auf Weiß, Footer, Eingabefelder; die Tokens
   `--paper-2` und `--sand` sind nur Aliase darauf). Gold `#b88b4a` ist die Hauptakzentfarbe (Buttons, Linien, Icons), tieferes Gold `#8f6934`
   (große Zahlen), Gold als Text `#7a5727`; Text/aktive Elemente warmes Dunkelbraun `#2a2118`, Muted `#5f594c`.
-  Ergänzungsfarbe (sparsam, nur Chips): gedecktes Salbei-Olivgrün `#4f5b3c` auf Salbei-Tönung `#e5e9d9`.
+  Chips (Fachtags, Qualifikationen, Seminarthemen): etwas dunkleres Beige `#e9dfcd` (`--chip`) mit feiner Goldlinie und Dunkelbraun-Text. Kein Grün in der Website.
   Hintergründe wechseln Weiß → Beige; Heroes laufen sehr weich von Beige nach Weiß (nur helle Töne, nie dunkel/Gold-Verläufe).
   Der Footer ist eine flache beige Fläche. Kontraste (WCAG AA): Text/Weiß ≈ 15,8:1, Muted/Beige ≈ 6,2:1, Gold-Text/Weiß ≈ 6,5:1
-  (Beige ≈ 5,8:1), Button dunkel/Gold ≈ 5,7:1, Salbei/Tönung ≈ 6,5:1. Favicon, Touch-Icons, Manifest und `og-image.jpg` folgen der Palette.
+  (Beige ≈ 5,8:1), Button dunkel/Gold ≈ 5,7:1, Chip-Text Braun/`#e9dfcd` ≈ 11:1. Favicon, Touch-Icons, Manifest und `og-image.jpg` folgen der Palette.
 - **Buttons:** runde Pillen; Primär in Gold (heller Gold-Verlauf, dunkler Text) mit Lift, Glanzstreifen, wanderndem Pfeil und leichtem
   Magnet-Effekt (nur Maus), Sekundär als Linie mit dunkler Füllung beim Hover; gilt auch für den schwebenden Orientierungs-Button.
   `prefers-reduced-motion` schaltet Lift, Glanz und Magnet ab.
-- **Porträt:** überall dieselbe Klasse `.frame` (abgerundetes Rechteck, Radius 14 px, versetzte Goldlinie).
+- **Porträt:** überall dieselbe Klasse `.frame` (abgerundetes Rechteck, Radius 14 px, versetzte Goldlinie), Format 5:6 (`aspect-ratio`, `object-position: 50% 12%`, `width/height` 313×376 am `<img>`).
 - **Schriften:** Source Serif 4 (Überschriften, Gewicht 500) und Inter (Text) – **lokal gehostet** (`assets/fonts/`,
   `font-display: swap`, Preload je Sprache, Kyrillisch für RU). Keine Verbindung zu Google Fonts.
 - **Prinzipien:** ruhig und viel Weißraum, flache Karten (Radius 16 px, 1-px-Linie), runde Buttons, Serif-Überschriften im Gewicht 400,
@@ -142,7 +144,7 @@ Designsystem „Weiß · Beige · Gold“ (Farbwelt der ursprünglichen Website;
   Zeilen umbrechen, und horizontaler Überlauf bei 320/375/768/1024/1440 px auf allen 28 Seiten + 404 – keine Funde.
 - **Bewegung:** nur kurzes, leises Einblenden (0,6 s, 12 px) per Intersection Observer, Fortschrittslinie, View Transitions als
   Progressive Enhancement; Buttons mit dezentem Hover (1 px). `prefers-reduced-motion` schaltet alles ab. Ohne JavaScript bleiben
-  alle Inhalte sichtbar. Anker auf der Leistungsseite (`#erp` …) öffnen das passende Akkordeon.
+  alle Inhalte sichtbar. Anker auf der Leistungsseite (`#erp` …) öffnen das passende Akkordeon; standardmäßig sind alle Punkte zugeklappt, ein sanfter Gold-Ring am Chevron-Button „atmet“ 4× (CSS, endet bei erster Bedienung; aus bei `prefers-reduced-motion`).
 - **CSP:** keine Inline-Styles im HTML (`style-src 'self'`); Abstände über Klassen.
 - Barrierefreiheit: Skip-Link, Landmarks, sichtbare Fokus-Stile, Pfeiltasten im Sprachumschalter, Menü mit Fokusfalle und Esc,
   Logo-Laufband pausiert bei Hover und steht bei `prefers-reduced-motion` still (Logos in Originalfarbe), Akkordeons nativ per Tastatur bedienbar.

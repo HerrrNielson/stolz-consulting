@@ -239,8 +239,22 @@
     i.checked = !!checked;
     i.addEventListener("change", function () { onChange(i); });
     l.appendChild(i);
-    l.appendChild(el("span", "analyse__opt-label", label));
+    var lab = el("span", "analyse__opt-label", typeof label === "string" ? label : null);
+    if (typeof label !== "string") lab.appendChild(label);
+    l.appendChild(lab);
     return l;
+  }
+
+  /* Kontrollierter Umbruch in Kacheln: "|" markiert die Stelle (nach Buchstaben mit Bindestrich) */
+  function tileLabel(s) {
+    var parts = s.split("|");
+    if (parts.length < 2) return s;
+    var f = el("span", "tile-txt");
+    f.appendChild(document.createTextNode(parts[0]));
+    if (!/[-\s]$/.test(parts[0])) f.appendChild(el("span", "tile-h", "-"));
+    f.appendChild(el("br", "tile-br"));
+    f.appendChild(document.createTextNode(parts[1]));
+    return f;
   }
 
   /* Schritt 1: Thema (Mehrfachauswahl; „Noch unklar“ schließt die anderen aus) */
@@ -293,7 +307,7 @@
     fs2.appendChild(lg2);
     var row = el("div", "analyse__chips");
     T.sizes.forEach(function (s) {
-      row.appendChild(choice("radio", "size", s[0], s[1], state.size === s[0], function () { state.size = s[0]; }));
+      row.appendChild(choice("radio", "size", s[0], tileLabel(s[1]), state.size === s[0], function () { state.size = s[0]; }));
     });
     fs2.appendChild(row);
     content.appendChild(fs2);
@@ -346,7 +360,7 @@
     var lead = leadTopic(), ph = lead.opts.filter(function (o) { return o[0] === state.phase; })[0];
     if (ph) chips.appendChild(el("li", null, ph[1]));
     var sz = T.sizes.filter(function (s) { return s[0] === state.size; })[0];
-    if (sz) chips.appendChild(el("li", null, sz[1]));
+    if (sz) chips.appendChild(el("li", null, sz[1].replace("|", "")));
     sum.appendChild(chips);
     content.appendChild(sum);
 

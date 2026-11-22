@@ -291,7 +291,7 @@ def page_home(lang):
         <div class="hero__media"><div class="frame">
           <picture>
             <source type="image/webp" srcset="{a('img/portrait.webp')}">
-            <img src="{a('img/portrait.jpg')}" alt="{esc(t['portrait_alt'])}" width="313" height="474" fetchpriority="high" decoding="async">
+            <img src="{a('img/portrait.jpg')}" alt="{esc(t['portrait_alt'])}" width="313" height="376" fetchpriority="high" decoding="async">
           </picture>
         </div></div>
       </div>
@@ -331,7 +331,7 @@ def page_home(lang):
         <div class="shortprofile__media reveal"><div class="frame">
           <picture>
             <source type="image/webp" srcset="{a('img/portrait.webp')}">
-            <img src="{a('img/portrait.jpg')}" alt="{esc(t['portrait_alt'])}" width="313" height="474" loading="lazy" decoding="async">
+            <img src="{a('img/portrait.jpg')}" alt="{esc(t['portrait_alt'])}" width="313" height="376" loading="lazy" decoding="async">
           </picture>
         </div></div>
         <div data-stagger>
@@ -370,7 +370,7 @@ def page_leistungen(lang):
             tags = (f'<p class="k k--gap">{esc(f["tags_k"])}</p>'
                     '<ul class="tags">' + "".join(f"<li>{esc(x)}</li>" for x in f["tags"]) + "</ul>")
         when = "".join(f"<li>{esc(x)}</li>" for x in f["when"])
-        opened = " open" if i == 0 else ""
+        opened = ""
         blocks.append(f"""
         <details class="acc card reveal" id="{f['id']}"{opened}>
           <summary>{icon_box(SERVICE_ICONS[f['id']])}
@@ -436,7 +436,7 @@ def page_profil(lang):
         <aside class="profile__aside reveal">
           <div class="frame"><picture>
             <source type="image/webp" srcset="{a('img/portrait.webp')}">
-            <img src="{a('img/portrait.jpg')}" alt="{esc(t['alt'])}" width="313" height="474" decoding="async">
+            <img src="{a('img/portrait.jpg')}" alt="{esc(t['alt'])}" width="313" height="376" decoding="async">
           </picture></div>
           <div class="profile__card">
             <p class="name">Mag. Dr. Sabine Stolz, MSc</p>

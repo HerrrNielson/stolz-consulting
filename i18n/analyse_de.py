@@ -39,7 +39,7 @@ ANALYSE = dict(
              sentence="Wenn noch unklar ist, welches Thema für Sie im Vordergrund steht, ist das ein guter Ausgangspunkt für ein Gespräch – die Fragen lassen sich gemeinsam sortieren."),
     ],
     size_q="Wie groß ist Ihr Unternehmen?", size_opt="(optional)",
-    sizes=[("micro", "Kleinstunternehmen"), ("sme", "KMU bis 50 Mitarbeitende"), ("large", "Größeres Unternehmen")],
+    sizes=[("micro", "Kleinst|unternehmen"), ("sme", "KMU bis 50 Mitarbeitende"), ("large", "Größeres Unternehmen")],
     s3_q="Eine erste Einordnung", fb_intro="Ihre Auswahl – {topics} – lässt sich in einem Gespräch gut einordnen.",
     fb_kind=dict(
         plan="Wenn Sie noch in der Planung sind, ist ein früher Austausch oft hilfreich: Fragen lassen sich sortieren, bevor Entscheidungen anstehen.",
@@ -47,7 +47,7 @@ ANALYSE = dict(
         second="Eine zweite Meinung kann helfen, bestehende Überlegungen oder Angebote einzuordnen – sachlich und ohne Vorfestlegung.",
         first="Eine erste Einordnung ist ein guter Anfang, ohne dass Sie sich schon festlegen müssen.",
         info="Sie können sich zunächst informieren – auch dafür ist ein Gespräch geeignet, ganz ohne Verpflichtung."),
-    fb_close="Ein Orientierungsgespräch ist unverbindlich. Wir klären gemeinsam, ob und wie ich Sie sinnvoll unterstützen kann – nicht jede Frage braucht eine Beratung.",
+    fb_close="Ein Orientierungsgespräch ist unverbindlich. Gemeinsam klären wir, ob und wie ich Sie sinnvoll unterstützen kann.",
     fb_note="Ihre Angaben werden erst übermittelt, wenn Sie im nächsten Schritt absenden.",
     cta="Orientierungsgespräch anfragen", direct="Lieber direkt schreiben", **{"and": " und "},
     s4_q="Wie darf ich Sie erreichen?", s4_lead="Ich melde mich persönlich bei Ihnen, um einen Termin für das Orientierungsgespräch abzustimmen.",

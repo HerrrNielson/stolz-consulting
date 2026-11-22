@@ -136,6 +136,15 @@
   openFromHash();
   window.addEventListener("hashchange", openFromHash);
 
+  /* Sanfter Gold-Ring am Aufklapp-Button (CSS); endet, sobald ein Punkt geöffnet/bedient wurde */
+  var accList = document.querySelector(".acc-list");
+  if (accList) {
+    var touched = function () { accList.classList.add("is-touched"); };
+    accList.addEventListener("click", touched, { once: true });
+    accList.addEventListener("toggle", touched, true);
+    if (accList.querySelector(".acc[open]")) touched();
+  }
+
   /* ---------- Magnetische Buttons (nur Maus, nur ohne Reduced Motion) ---------- */
   if (window.matchMedia("(pointer: fine)").matches && !reduce.matches) {
     document.querySelectorAll(".btn--primary, .btn--outline").forEach(function (b) {

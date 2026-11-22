@@ -33,7 +33,7 @@ ANALYSE = dict(
              sentence="If it is still unclear which topic matters most to you, that is a good starting point for a conversation – the questions can be sorted out together."),
     ],
     size_q="How large is your company?", size_opt="(optional)",
-    sizes=[("micro", "Micro-enterprise"), ("sme", "SME up to 50 employees"), ("large", "Larger company")],
+    sizes=[("micro", "Micro-|enterprise"), ("sme", "SME up to 50 employees"), ("large", "Larger company")],
     s3_q="A first assessment", fb_intro="Your selection – {topics} – can be put into context well in a conversation.",
     fb_kind=dict(
         plan="If you are still planning, an early exchange is often helpful: questions can be sorted before decisions are due.",
@@ -41,7 +41,7 @@ ANALYSE = dict(
         second="A second opinion can help put existing considerations or offers into perspective – factually and without commitment.",
         first="A first assessment is a good start, without you having to commit to anything.",
         info="You can start by finding out more – a conversation is suitable for that too, with no obligation."),
-    fb_close="An orientation call is non-binding. Together we clarify whether and how I can usefully support you – not every question needs consulting.",
+    fb_close="An orientation call is non-binding. Together we clarify whether and how I can usefully support you.",
     fb_note="Your details are only sent when you submit in the next step.",
     cta="Request an orientation call", direct="Prefer to write directly", **{"and": " and "},
     s4_q="How may I reach you?", s4_lead="I will get in touch personally to arrange a time for the orientation call.",
