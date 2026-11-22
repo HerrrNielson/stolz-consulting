@@ -29,6 +29,9 @@ i18n/                 Texte – eine Datei je Sprache (de.py, en.py, fr.py, ru.p
 contact.php           Handler für das Kontaktformular (versendet per PHP mail())
 assets/css/fonts.css  lokale @font-face-Regeln (Inter, Source Serif 4; latin, latin-ext, cyrillic)
 assets/css/style.css  Stylesheet (Tokens, Komponenten, Motion, Responsive)
+mapdata.py            Kartengeometrie (erzeugt von tools/make_map.py, nicht von Hand bearbeiten)
+tools/make_map.py     erzeugt mapdata.py aus Natural-Earth-Daten
+assets/css/map.css, assets/js/map.js   Weltkarte (nur auf der Referenzseite geladen)
 assets/js/main.js     Header, Menü, Sprachumschalter, Einblenden, Akkordeon-Anker, Logo-Laufband (Hover-Pause), Formular
 assets/fonts/         WOFF2-Schriften (selbst gehostet, DSGVO-freundlich)
 assets/img/           Optimierte Bilder; original/ = unveränderte Downloads
@@ -69,6 +72,29 @@ Es werden keine Zusatzpakete benötigt (nur Python 3).
 - **Rechtstexte:** Impressum (`impressum.todo_rows`, `sections`) und Datenschutz enthalten sichtbar markierte
   `[BITTE ERGÄNZEN]`-Platzhalter (gelb hinterlegt). `python build.py` meldet am Ende, wo noch welche offen sind.
   Alle Rechtstexte (alle Sprachen) sind **von einer Fachperson zu prüfen**.
+
+## Weltkarte (Referenzseite)
+
+Auf `/referenzen/` (und `/en/references/`, `/fr/references/`, `/ru/references/`) zeigt eine Inline-SVG-Weltkarte, wo Auslandserfahrung besteht:
+Sitz Österreich (Ring-Marker mit sanftem Puls), Auslandserfahrung in Russland, Baltikum, China, USA, Frankreich, Deutschland (Punkt-Marker,
+gestrichelte Bögen vom Sitz). Darunter eine Legende/Liste (auch für Screenreader und Mobil). Keine externen Bibliotheken oder Requests.
+
+- **Orte ergänzen:** `MAP_PLACES` oben in `build.py` – ein Eintrag je Ort (`id`, `kind` "home"/"abroad", `lon`/`lat`, `iso`, `region`,
+  `label` in DE/EN/FR/RU, `stations`). Nur belegte Orte eintragen. Ein Land, das noch nicht in `HIGHLIGHT` (`tools/make_map.py`) steht,
+  dort ergänzen und `python tools/make_map.py <ne_110m_admin_0_countries.geojson>` ausführen (erzeugt `mapdata.py`), dann `python build.py`.
+  Die Marker stehen nur ungefähr im Land bzw. in der Region (keine Stadtangabe). Das Baltikum ist eine Region (Estland/Lettland/Litauen
+  zart getönt), nicht auf ein Land festgelegt.
+- **Belege (Stand Nov. 2026, Profil „Berufliche Laufbahn“, in `i18n/de.py`):** VAE AG – Russland, Baltikum; AVL – Russland, China, USA, Frankreich;
+  Ceram Catalysts – Frankreich, Deutschland. Auf den öffentlichen Seiten /profil/ und /referenzen/ werden keine weiteren Orte als Stationen genannt
+  (Steiermark/Graz/Hamburg stehen nur in Namen von Kunden und sind bewusst nicht aufgenommen).
+- **Texte:** `map_*`-Schlüssel unter `referenzen` in `i18n/<sprache>.py`; Überschrift „Auslandserfahrung auf drei Kontinenten“ (Europa, Asien/China, Nordamerika/USA).
+- **Quelle/Lizenz der Geometrie:** Natural Earth, `ne_110m_admin_0_countries` (Public Domain, naturalearthdata.com), vereinfacht
+  (Douglas-Peucker), Miller-Projektion, Ausschnitt 56° S – 80° N; Frankreich ohne Überseegebiete. Hinweis steht auch als Kommentar im SVG.
+- **Animation:** beim Einscrollen (Intersection Observer): Länder blenden gestaffelt ein, Bögen werden gezeichnet (`stroke-dashoffset` auf einer Maske),
+  Marker „poppen“ auf, Ring am Sitz pulsiert 3×, danach Ruhe. `prefers-reduced-motion` und ohne JavaScript: fertige statische Karte.
+  Staffelung über Klassen `.s0`–`.s12`, keine Inline-Styles (CSP); der Tooltip wird per CSSOM positioniert.
+- **Bedienung:** Hover, Tastaturfokus (Tab) oder Tippen auf einen Marker zeigt „Ort: Stationen“; Esc/Klick daneben schließt. Auf Mobil sind die Marker vergrößert.
+- **Ungeprüft:** Screenreader, echte Touch-Geräte, emuliertes `prefers-reduced-motion` im Browser (nur per Code/CSS geprüft), Safari.
 
 ## Erweiterungspunkte
 

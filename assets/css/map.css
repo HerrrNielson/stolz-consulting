@@ -1,0 +1,80 @@
+/* ==========================================================================
+   Weltkarte (Referenzseite) – Inline-SVG, Markup erzeugt build.py (world_map), Logik in js/map.js
+   Ohne JS: vollständige, statische Karte. Mit JS (.wmap--ready): Einblend-Animation beim Einscrollen (.is-in).
+   Keine Inline-Styles (CSP): Staffelung über Klassen .s0 … .s12 (--i).
+   Farben: nur Beige/Gold/Dunkelbraun.
+   ========================================================================== */
+.wmap-section { padding-top: clamp(24px, 4vw, 56px); }
+.wmap-section .lead { margin-top: 16px; }
+.wmap { position: relative; margin: 0; }
+.wmap__svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+.wmap__land { fill: var(--chip); }
+.wmap__c { fill: var(--gold); fill-opacity: .6; stroke: #fff; stroke-width: .6; stroke-linejoin: round; }
+.wmap__c--region { fill-opacity: .34; }
+
+.wmap__arc { fill: none; stroke: var(--gold-deep); stroke-width: 1.3; stroke-dasharray: 4 4; stroke-linecap: round; opacity: .8; }
+.wmap__mask { fill: none; stroke: #fff; stroke-width: 6; stroke-dasharray: 100; stroke-dashoffset: 0; }
+
+.wmap__pin { cursor: pointer; outline: none; }
+.wmap__hit { fill: transparent; }
+.wmap__dot { fill: var(--gold-deep); stroke: #fff; stroke-width: 1.4; transition: fill .2s; }
+.wmap__ring { fill: none; stroke: var(--gold-deep); stroke-width: 1; opacity: .85; transition: stroke .2s, stroke-width .2s; }
+.wmap__pin--home .wmap__ring { fill: #fff; stroke-width: 2.2; opacity: 1; }
+.wmap__pulse { fill: none; stroke: var(--gold-deep); stroke-width: 1.6; opacity: 0; }
+.wmap__pin:hover .wmap__dot, .wmap__pin.is-active .wmap__dot { fill: var(--brown); }
+.wmap__pin:hover .wmap__ring, .wmap__pin.is-active .wmap__ring { stroke: var(--brown); }
+.wmap__pin:focus-visible .wmap__ring { stroke: var(--focus); stroke-width: 2.4; opacity: 1; }
+.wmap__pin:focus-visible .wmap__hit { stroke: var(--focus); stroke-width: 1.5; stroke-dasharray: 3 2; }
+
+.wmap__tip {
+  position: absolute; z-index: 3; left: 0; top: 0; width: max-content; max-width: min(240px, 80%);
+  transform: translate(-50%, calc(-100% - 14px));
+  background: var(--brown); color: #fff; font-size: .875rem; line-height: 1.35;
+  padding: 7px 11px; border-radius: 8px; pointer-events: none; box-shadow: var(--shadow);
+}
+.wmap__tip[hidden] { display: none; }
+.wmap__tip.is-below { transform: translate(-50%, 16px); }
+
+.wmap__key { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 28px; margin-top: 14px; font-size: .875rem; color: var(--muted); }
+.wmap__k { display: inline-flex; align-items: center; gap: 10px; }
+.wmap__sym { width: 10px; height: 10px; border-radius: 50%; background: var(--gold-deep); box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--gold-deep); flex: none; }
+.wmap__sym--home { width: 12px; height: 12px; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--gold-deep); }
+
+.wmap__list {
+  list-style: none; margin: clamp(24px, 3vw, 36px) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 4px 28px;
+}
+.wmap__list li { display: flex; align-items: baseline; gap: 14px; padding: 10px 12px; border-bottom: 1px solid var(--line); border-radius: 6px; transition: background .2s; }
+.wmap__list li.is-active { background: var(--paper); }
+.wmap__list .wmap__sym { position: relative; top: 1px; margin-left: 3px; }
+.wmap__list strong { font-weight: 600; color: var(--ink); }
+.wmap__st { display: block; color: var(--muted); font-size: .9375rem; }
+
+/* Mobil: Marker größer (Tippfläche) */
+@media (max-width: 640px) {
+  .wmap__pin { transform-box: fill-box; transform-origin: center; transform: scale(1.7); }
+  .wmap__arc { stroke-width: 1.6; }
+}
+
+/* ---------- Animation (nur mit JS und ohne Reduced-Motion; Startzustand setzt .wmap--ready) ---------- */
+.s0 { --i: 0; } .s1 { --i: 1; } .s2 { --i: 2; } .s3 { --i: 3; } .s4 { --i: 4; } .s5 { --i: 5; } .s6 { --i: 6; }
+.s7 { --i: 7; } .s8 { --i: 8; } .s9 { --i: 9; } .s10 { --i: 10; } .s11 { --i: 11; } .s12 { --i: 12; }
+
+.wmap__mk { transform-box: fill-box; transform-origin: center; }
+.wmap__pulse { transform-box: fill-box; transform-origin: center; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .wmap--ready .wmap__c { opacity: 0; }
+  .wmap--ready .wmap__mask { stroke-dashoffset: 100; }
+  .wmap--ready .wmap__mk { opacity: 0; transform: scale(.2); }
+
+  .wmap--ready.is-in .wmap__c { opacity: 1; transition: opacity .9s ease calc(var(--i) * .13s); }
+  .wmap--ready.is-in .wmap__mask { stroke-dashoffset: 0; transition: stroke-dashoffset 1.5s cubic-bezier(.5, 0, .2, 1) calc(.55s + var(--i) * .14s); }
+  .wmap--ready.is-in .wmap__mk { opacity: 1; transform: none; transition: opacity .35s ease calc(.9s + var(--i) * .17s), transform .6s cubic-bezier(.34, 1.56, .64, 1) calc(.9s + var(--i) * .17s); }
+  .wmap--ready.is-in .wmap__pulse { animation: wmap-pulse 2.8s ease-out 1.6s 3 both; }
+}
+@keyframes wmap-pulse {
+  from { opacity: .55; transform: scale(1); }
+  to   { opacity: 0;   transform: scale(2.8); }
+}

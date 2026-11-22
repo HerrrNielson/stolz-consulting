@@ -27,6 +27,7 @@ from html import escape
 from pathlib import Path
 
 from i18n import DEFAULT_LANG, LANGUAGES
+import mapdata  # Kartengeometrie (erzeugt von tools/make_map.py)
 
 ROOT = Path(__file__).resolve().parent
 DOMAIN = "https://www.stolz-consulting.net"
@@ -44,6 +45,39 @@ CONTACT = {
 EXTRA_STYLES = ["css/analyse.css"]  # Orientierungs-Check (Popup)
 EXTRA_SCRIPTS = ["js/analyse.js"]
 EXTRA_BODY = ""                     # weiteres Markup vor </body>; das Popup-Markup erzeugt analyse_block()
+
+
+# --------------------------------------------------------------------------
+# WELTKARTE auf der Referenzseite (Inline-SVG, siehe README "Weltkarte")
+# Orte hier ergaenzen: eine Zeile in MAP_PLACES. Nur belegte Orte eintragen!
+#   id        eindeutiges Kuerzel (CSS-/ID-tauglich)
+#   kind      "home" = Sitz, "abroad" = Auslandserfahrung
+#   lon, lat  Position des Markers (Grad; ungefaehre Lage im Land bzw. in der Region, keine Stadtangabe)
+#   iso       Laender, die auf der Karte golden eingefaerbt werden (ISO-3166-Alpha-2; nur Laender aus
+#             mapdata.MAP_COUNTRIES; weitere: HIGHLIGHT in tools/make_map.py ergaenzen und neu erzeugen)
+#   region    True = Region (z. B. Baltikum): Laender nur zart getoent, Marker nicht auf ein Land festgelegt
+#   label     Beschriftung je Sprache
+#   stations  belegende Stationen (Quelle: Profil, "Berufliche Laufbahn")
+# --------------------------------------------------------------------------
+MAP_PLACES = [
+    dict(id="at", kind="home", lon=15.4, lat=46.8, iso=["AT"], region=False, stations=[],
+         label=dict(de="Österreich", en="Austria", fr="Autriche", ru="Австрия")),
+    dict(id="ru", kind="abroad", lon=45, lat=56, iso=["RU"], region=False, stations=["VAE AG", "AVL"],
+         label=dict(de="Russland", en="Russia", fr="Russie", ru="Россия")),
+    dict(id="baltic", kind="abroad", lon=24.5, lat=57.2, iso=["EE", "LV", "LT"], region=True, stations=["VAE AG"],
+         label=dict(de="Baltikum", en="Baltic region", fr="Pays baltes", ru="Прибалтика")),
+    dict(id="cn", kind="abroad", lon=104, lat=35, iso=["CN"], region=False, stations=["AVL"],
+         label=dict(de="China", en="China", fr="Chine", ru="Китай")),
+    dict(id="us", kind="abroad", lon=-98, lat=39, iso=["US"], region=False, stations=["AVL"],
+         label=dict(de="USA", en="USA", fr="États-Unis", ru="США")),
+    dict(id="fr", kind="abroad", lon=2.5, lat=46.6, iso=["FR"], region=False, stations=["AVL", "Ceram Catalysts"],
+         label=dict(de="Frankreich", en="France", fr="France", ru="Франция")),
+    dict(id="de", kind="abroad", lon=10.3, lat=51, iso=["DE"], region=False, stations=["Ceram Catalysts"],
+         label=dict(de="Deutschland", en="Germany", fr="Allemagne", ru="Германия")),
+]
+
+# Zusaetzliche Dateien nur auf einzelnen Seiten: {Seitenschluessel: (Styles, Skripte)}
+PAGE_EXTRA = {"referenzen": (["css/map.css"], ["js/map.js"])}
 
 # Seiten ohne Orientierungs-Check (Popup und Einstiegsbutton)
 NO_ANALYSE = {"impressum", "datenschutz", "kontakt"}
@@ -499,6 +533,82 @@ def render_case_studies(lang, t):
     return out
 
 
+def world_map(lang, t):
+    """Weltkarte als Inline-SVG + Legende. Ohne JS vollstaendig sichtbar (Progressive Enhancement)."""
+    import math
+    W, H = mapdata.MAP_W, mapdata.MAP_H
+
+    def mill(lat):  # Projektion wie in tools/make_map.py
+        return 1.25 * math.log(math.tan(math.pi / 4 + 0.4 * math.radians(lat)))
+    y_top, k = mill(80.0), W / (2 * math.pi)
+
+    def proj(lon, lat):
+        return round((lon + 180) / 360 * W, 1), round((y_top - mill(lat)) * k, 1)
+    home = next(p for p in MAP_PLACES if p["kind"] == "home")
+    hx, hy = proj(home["lon"], home["lat"])
+    countries, arcs, pins, legend = [], [], [], []
+    ci = 0
+    for i, pl in enumerate(MAP_PLACES):
+        x, y = proj(pl["lon"], pl["lat"])
+        name = pl["label"][lang]
+        stations = ", ".join(pl["stations"]) if pl["stations"] else t["map_home_note"]
+        tip = f"{name}: {stations}"
+        for iso in pl["iso"]:
+            ci += 1
+            cls = "wmap__c wmap__c--region" if pl["region"] else "wmap__c"
+            countries.append(f'<path class="{cls} s{min(ci, 12)}" d="{mapdata.MAP_COUNTRIES[iso]}"/>')
+        if pl["kind"] == "abroad":
+            dist = math.hypot(x - hx, y - hy)
+            cx, cy = (hx + x) / 2, (hy + y) / 2 - max(10, dist * .28)
+            d = f"M{hx:g},{hy:g} Q{cx:.1f},{cy:.1f} {x:g},{y:g}"
+            arcs.append(
+                f'<mask id="wmm-{pl["id"]}" maskUnits="userSpaceOnUse" x="0" y="0" width="{W}" height="{H:g}">'
+                f'<path class="wmap__mask s{i}" d="{d}" pathLength="100"/></mask>'
+                f'<path class="wmap__arc" d="{d}" mask="url(#wmm-{pl["id"]})"/>')
+            pin = (f'<g class="wmap__pin s{i}" data-place="{pl["id"]}" data-tip="{esc(tip)}" tabindex="0" role="img" aria-label="{esc(tip)}">'
+                   f'<g class="wmap__mk"><circle class="wmap__hit" cx="{x:g}" cy="{y:g}" r="13"/>'
+                   f'<circle class="wmap__ring" cx="{x:g}" cy="{y:g}" r="7.5"/>'
+                   f'<circle class="wmap__dot" cx="{x:g}" cy="{y:g}" r="3.8"/></g></g>')
+        else:
+            pin = (f'<g class="wmap__pin wmap__pin--home s{i}" data-place="{pl["id"]}" data-tip="{esc(tip)}" tabindex="0" role="img" aria-label="{esc(tip)}">'
+                   f'<g class="wmap__mk"><circle class="wmap__hit" cx="{x:g}" cy="{y:g}" r="14"/>'
+                   f'<circle class="wmap__pulse" cx="{x:g}" cy="{y:g}" r="11"/>'
+                   f'<circle class="wmap__ring" cx="{x:g}" cy="{y:g}" r="10"/>'
+                   f'<circle class="wmap__dot" cx="{x:g}" cy="{y:g}" r="5.6"/></g></g>')
+        pins.append(pin)
+        sym = "wmap__sym wmap__sym--home" if pl["kind"] == "home" else "wmap__sym"
+        legend.append(
+            f'<li data-place="{pl["id"]}"><span class="{sym}" aria-hidden="true"></span>'
+            f'<span><strong>{esc(name)}</strong> <span class="wmap__st">{esc(stations)}</span></span></li>')
+    pins.sort(key=lambda h: 'wmap__pin--home' in h)  # Sitz zuletzt zeichnen (liegt oben)
+    return f"""
+    <section class="section wmap-section" aria-labelledby="wmap-h">
+      <div class="container">
+        <div class="section__head reveal">
+          <p class="eyebrow">{esc(t['map_eyebrow'])}</p>
+          <h2 class="h2" id="wmap-h">{em(t['map_h2'])}</h2>
+          <p class="lead">{esc(t['map_lead'])}</p>
+        </div>
+        <figure class="wmap" data-wmap>
+          <svg class="wmap__svg" viewBox="0 0 {W} {H:g}" role="group" aria-label="{esc(t['map_aria'])}" focusable="false">
+            <!-- Kartengeometrie: Natural Earth 110m (Public Domain), vereinfacht, Miller-Projektion; erzeugt von tools/make_map.py -->
+            <path class="wmap__land" d="{mapdata.MAP_LAND}" aria-hidden="true"/>
+            <g aria-hidden="true">{"".join(countries)}</g>
+            <g aria-hidden="true">{"".join(arcs)}</g>
+            <g>{"".join(pins)}</g>
+          </svg>
+          <div class="wmap__tip" aria-hidden="true" hidden></div>
+          <figcaption class="wmap__key">
+            <span class="wmap__k"><span class="wmap__sym wmap__sym--home" aria-hidden="true"></span>{esc(t['map_key_home'])}</span>
+            <span class="wmap__k"><span class="wmap__sym" aria-hidden="true"></span>{esc(t['map_key_abroad'])}</span>
+          </figcaption>
+        </figure>
+        <ul class="wmap__list">{"".join(legend)}</ul>
+      </div>
+    </section>
+"""
+
+
 def page_referenzen(lang):
     k, D = "referenzen", LANGS[lang]
     t = D["referenzen"]
@@ -519,7 +629,7 @@ def page_referenzen(lang):
         <ul class="focus" data-stagger>{cards}</ul>
       </div>
     </section>
-
+{world_map(lang, t)}
     <section class="section section--paper2">
       <div class="container">
         <div class="section__head reveal">
@@ -741,8 +851,9 @@ def layout(key, lang, body):
     alternates += f'\n  <link rel="alternate" hreflang="x-default" href="{DOMAIN}/{url_path(DEFAULT_LANG, key)}">'
     og_alt = "\n  ".join(f'<meta property="og:locale:alternate" content="{LANGS[x]["locale"]}">'
                          for x in CODES if x != lang)
-    extra_css = "".join(f'\n  <link rel="stylesheet" href="{a(s)}">' for s in EXTRA_STYLES)
-    extra_js = "".join(f'\n  <script src="{a(s)}" defer></script>' for s in EXTRA_SCRIPTS)
+    pg_css, pg_js = PAGE_EXTRA.get(key, ([], []))
+    extra_css = "".join(f'\n  <link rel="stylesheet" href="{a(s)}">' for s in EXTRA_STYLES + pg_css)
+    extra_js = "".join(f'\n  <script src="{a(s)}" defer></script>' for s in EXTRA_SCRIPTS + pg_js)
     ld = f'\n  <script type="application/ld+json">{json_ld(lang)}</script>' if key == "home" else ""
     others = "".join(   # alle vier Sprachen, die aktuelle ist markiert
         f'<a href="{rel(key, lang, key, x)}" lang="{x}" hreflang="{x}"' + (' aria-current="true"' if x == lang else "") + f'>{esc(LANGS[x]["name"])}</a>'
