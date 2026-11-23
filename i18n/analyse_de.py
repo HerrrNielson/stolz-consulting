@@ -2,7 +2,7 @@
 """Texte des Orientierungs-Checks (Popup, assets/js/analyse.js) – Deutsch.
 
 build.py bettet diese Daten als JSON in jede Seite ein; im JS stehen keine Texte.
-topics[].opts: (id, Beschriftung) – ids plan/act/second/first/info steuern die Rückmeldung (fb_kind)
+topics[].opts: (id, Beschriftung), ids plan/act/second/first/info steuern die Rückmeldung (fb_kind)
 und werden von contact.php in eine Klartext-Zeile für die Mail übersetzt (Whitelist).
 Platzhalter: {n}/{m} Schritt, {topics} Auswahl, {a}…{/a} Link, {email} Adresse.
 """
@@ -15,7 +15,7 @@ def _t(id, label, q, plan, act, second, sentence):
 ANALYSE = dict(
     fab="Orientierungsgespräch", fab_title="Unverbindliches Orientierungsgespräch",
     kicker="Unverbindlich", title="Orientierungs-Check",
-    lead="Ein paar kurze Fragen, damit ich Ihre Situation besser einordnen kann – es dauert etwa eine Minute.",
+    lead="Ein paar kurze Fragen, damit ich Ihre Situation besser einordnen kann, es dauert etwa eine Minute.",
     close="Schließen", back="Zurück", next="Weiter", progress="Schritt {n} von {m}",
     s1_q="Welches Thema beschäftigt Sie derzeit?", s1_hint="Mehrfachauswahl möglich.",
     topics=[
@@ -36,17 +36,17 @@ ANALYSE = dict(
            "Bei Schulung und Training lässt sich im Gespräch klären, welche Inhalte und welches Format für Ihr Team sinnvoll sind."),
         dict(id="unklar", label="Noch unklar", q="Was würde Ihnen jetzt am meisten helfen?",
              opts=[("first", "Eine erste Einordnung meiner Situation"), ("second", "Eine zweite Meinung"), ("info", "Ich möchte mich zunächst informieren")],
-             sentence="Wenn noch unklar ist, welches Thema für Sie im Vordergrund steht, ist das ein guter Ausgangspunkt für ein Gespräch – die Fragen lassen sich gemeinsam sortieren."),
+             sentence="Wenn noch unklar ist, welches Thema für Sie im Vordergrund steht, ist das ein guter Ausgangspunkt für ein Gespräch, die Fragen lassen sich gemeinsam sortieren."),
     ],
     size_q="Wie groß ist Ihr Unternehmen?", size_opt="(optional)",
     sizes=[("micro", "Kleinst|unternehmen"), ("sme", "KMU bis 50 Mitarbeitende"), ("large", "Größeres Unternehmen")],
-    s3_q="Eine erste Einordnung", fb_intro="Ihre Auswahl – {topics} – lässt sich in einem Gespräch gut einordnen.",
+    s3_q="Eine erste Einordnung", fb_intro="Ihre Auswahl ({topics}) lässt sich in einem Gespräch gut einordnen.",
     fb_kind=dict(
         plan="Wenn Sie noch in der Planung sind, ist ein früher Austausch oft hilfreich: Fragen lassen sich sortieren, bevor Entscheidungen anstehen.",
         act="Bei konkretem Handlungsbedarf geht es im Gespräch zunächst darum, die Lage zu klären und mögliche nächste Schritte zu ordnen.",
-        second="Eine zweite Meinung kann helfen, bestehende Überlegungen oder Angebote einzuordnen – sachlich und ohne Vorfestlegung.",
+        second="Eine zweite Meinung kann helfen, bestehende Überlegungen oder Angebote einzuordnen, sachlich und ohne Vorfestlegung.",
         first="Eine erste Einordnung ist ein guter Anfang, ohne dass Sie sich schon festlegen müssen.",
-        info="Sie können sich zunächst informieren – auch dafür ist ein Gespräch geeignet, ganz ohne Verpflichtung."),
+        info="Sie können sich zunächst informieren, auch dafür ist ein Gespräch geeignet, ganz ohne Verpflichtung."),
     fb_close="Ein Orientierungsgespräch ist unverbindlich. Gemeinsam klären wir, ob und wie ich Sie sinnvoll unterstützen kann.",
     fb_note="Ihre Angaben werden erst übermittelt, wenn Sie im nächsten Schritt absenden.",
     cta="Orientierungsgespräch anfragen", direct="Lieber direkt schreiben", **{"and": " und "},

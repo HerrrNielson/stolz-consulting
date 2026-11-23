@@ -127,7 +127,8 @@ CASE_STUDIES = []
 TESTIMONIALS = []
 
 REQ = '<span class="req" aria-hidden="true">*</span>'
-ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
+ROW_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
+ARROW = ""   # Buttons und Textlinks tragen keine Pfeile mehr; nur das Leistungsregister nutzt ROW_ARROW
 
 
 # --------------------------------------------------------------------------
@@ -151,8 +152,8 @@ def asset(key, lang, path):
 
 
 def em(text):
-    """Escaped Text; *x* -> <em>x</em>."""
-    return re.sub(r"\*(.+?)\*", r"<em>\1</em>", escape(text))
+    """Escaped Text. Die *x*-Auszeichnung der Texte wird nicht mehr als Kursiv ausgegeben: Ueberschriften bleiben aufrecht."""
+    return escape(text).replace("*", "")
 
 
 def esc(text):
@@ -260,21 +261,20 @@ def cta_block(key, lang):
       <div class="container">
         <div class="cta reveal">
           <div class="cta__text">
-            <p class="eyebrow">{esc(c['eyebrow'])}</p>
             <h2 class="h2">{em(c['h2'])}</h2>{note}
           </div>
-          <a class="btn btn--primary" href="{rel(key, lang, 'kontakt')}"><span>{esc(c['btn'])}</span>{ARROW}</a>
+          <a class="btn btn--primary" href="{rel(key, lang, 'kontakt')}"><span>{esc(c['btn'])}</span></a>
         </div>
       </div>
     </section>"""
 
 
-def page_hero(t, lead=True):
+def page_hero(t, lead=True, plain=False):
     lead_html = f'\n        <p class="lead reveal">{esc(t["lead"])}</p>' if lead and t.get("lead") else ""
+    cls = "page-hero page-hero--plain" if plain else "page-hero"
     return f"""
-    <section class="page-hero">
+    <section class="{cls}">
       <div class="container" data-stagger>
-        <p class="eyebrow reveal">{esc(t['eyebrow'])}</p>
         <h1 class="h1 reveal">{em(t['h1'])}</h1>{lead_html}
       </div>
     </section>"""
@@ -304,22 +304,21 @@ def page_home(lang):
         f'<li class="reveal"><span class="facts__num">{stat_value(v)}</span><span class="facts__label">{esc(label)}</span></li>'
         for v, _f, label in t["stats"])
     svc = "".join(
-        f'<li class="reveal"><a class="svc-card card" href="{L("leistungen")}#{f["id"]}">{icon_box(SERVICE_ICONS[f["id"]])}'
-        f'<span class="svc-card__t">{esc(f["title"])}</span><span class="svc-card__d">{esc(f["teaser"])}</span>'
-        f'<span class="svc-card__go">{ARROW}</span></a></li>'
-        for f in fields)
+        f'<li class="reveal"><a class="svc-row" href="{L("leistungen")}#{f["id"]}"><span class="svc-row__n" aria-hidden="true">{i:02d}</span>'
+        f'<span class="svc-row__t">{esc(f["title"])}</span><span class="svc-row__d">{esc(f["teaser"])}</span>'
+        f'<span class="svc-row__go" aria-hidden="true">{ROW_ARROW}</span></a></li>'
+        for i, f in enumerate(fields, 1))
     prose = "".join(f"<p>{esc(x)}</p>" for x in t["pr_p"])
     ref_lead = esc(t["ref_lead"].replace("{n}", str(n_refs)))
     return f"""
     <section class="hero">
       <div class="container hero__grid">
         <div class="hero__copy" data-stagger>
-          <p class="eyebrow reveal">{esc(t['eyebrow'])}</p>
           <h1 class="h1 reveal">{em(t['h1'])}</h1>
           <p class="hero__sub reveal">{esc(t['intro'])}</p>
           <div class="hero__actions reveal">
-            <a class="btn btn--primary" href="{L('kontakt')}"><span>{esc(t['btn_primary'])}</span>{ARROW}</a>
-            <a class="btn btn--outline" href="{L('leistungen')}"><span>{esc(t['svc_all'])}</span></a>
+            <a class="btn btn--primary" href="{L('kontakt')}"><span>{esc(t['btn_primary'])}</span></a>
+            <a class="link-text" href="{L('leistungen')}"><span>{esc(t['svc_all'])}</span></a>
           </div>
         </div>
         <div class="hero__media"><div class="frame">
@@ -340,20 +339,16 @@ def page_home(lang):
     <section class="section">
       <div class="container">
         <div class="section__head section__head--row reveal">
-          <div>
-            <p class="eyebrow">{esc(t['svc_eyebrow'])}</p>
-            <h2 class="h2">{em(t['svc_h2'])}</h2>
-          </div>
-          <a class="link-arrow" href="{L('leistungen')}"><span>{esc(t['svc_all'])}</span>{ARROW}</a>
+          <h2 class="h2">{em(t['svc_h2'])}</h2>
+          <a class="link-text" href="{L('leistungen')}"><span>{esc(t['svc_all'])}</span></a>
         </div>
-        <ul class="svc-cards" data-stagger>{svc}</ul>
+        <ul class="svc-index" data-stagger>{svc}</ul>
       </div>
     </section>
 
     <section class="section section--paper2">
       <div class="container">
         <div class="section__head reveal">
-          <p class="eyebrow">{esc(lt['process_eyebrow'])}</p>
           <h2 class="h2">{em(lt['process_h2'])}</h2>
         </div>
         <ol class="steps" data-stagger>{steps_html(lt['steps'])}</ol>
@@ -362,19 +357,12 @@ def page_home(lang):
 
     <section class="section">
       <div class="container shortprofile">
-        <div class="shortprofile__media reveal"><div class="frame">
-          <picture>
-            <source type="image/webp" srcset="{a('img/portrait.webp')}">
-            <img src="{a('img/portrait.jpg')}" alt="{esc(t['portrait_alt'])}" width="313" height="376" loading="lazy" decoding="async">
-          </picture>
-        </div></div>
-        <div data-stagger>
-          <p class="eyebrow reveal">{esc(t['pr_eyebrow'])}</p>
-          <h2 class="h2 reveal">{esc(t['pr_h2'])}</h2>
-          <div class="prose reveal">{prose}</div>
-          <p class="quote reveal">{esc(t['quote'])}</p>
-          <a class="link-arrow reveal" href="{L('profil')}"><span>{esc(t['ap_link'])}</span>{ARROW}</a>
+        <div class="shortprofile__head reveal">
+          <h2 class="h2">{esc(t['pr_h2'])}</h2>
+          <a class="link-text" href="{L('profil')}"><span>{esc(t['ap_link'])}</span></a>
         </div>
+        <div class="prose reveal">{prose}</div>
+        <blockquote class="pullquote reveal">{esc(t['quote'])}</blockquote>
       </div>
     </section>
 
@@ -382,11 +370,10 @@ def page_home(lang):
       <div class="container">
         <div class="section__head section__head--row reveal">
           <div>
-            <p class="eyebrow">{esc(t['ref_eyebrow'])}</p>
             <h2 class="h2">{esc(t['ref_h2'])}</h2>
             <p class="section__lead">{ref_lead}</p>
           </div>
-          <a class="link-arrow" href="{L('referenzen')}"><span>{esc(t['ref_all'])}</span>{ARROW}</a>
+          <a class="link-text" href="{L('referenzen')}"><span>{esc(t['ref_all'])}</span></a>
         </div>
       </div>
       {marquee(k, lang, u['marquee_label'])}
@@ -406,7 +393,7 @@ def page_leistungen(lang):
         when = "".join(f"<li>{esc(x)}</li>" for x in f["when"])
         opened = ""
         blocks.append(f"""
-        <details class="acc card reveal" id="{f['id']}"{opened}>
+        <details class="acc reveal" id="{f['id']}"{opened}>
           <summary>{icon_box(SERVICE_ICONS[f['id']])}
             <span><span class="acc__t">{esc(f['title'])}</span><span class="acc__d">{esc(f['teaser'])}</span></span>
             <span class="acc__chev">{CHEVRON}</span></summary>
@@ -419,7 +406,7 @@ def page_leistungen(lang):
 
     <section class="section section--tight">
       <div class="container">
-        <div class="form-note card reveal">
+        <div class="form-note reveal">
           <h2 class="h3">{esc(t['form_h'])}</h2>
           <p>{esc(t['form_p'])}</p>
         </div>
@@ -436,7 +423,6 @@ def page_leistungen(lang):
     <section class="section section--paper2">
       <div class="container">
         <div class="section__head reveal">
-          <p class="eyebrow">{esc(t['process_eyebrow'])}</p>
           <h2 class="h2">{em(t['process_h2'])}</h2>
         </div>
         <ol class="steps" data-stagger>{steps_html(t['steps'])}</ol>
@@ -453,12 +439,12 @@ def page_profil(lang):
 
     def career(items):
         return "".join(
-            f'<li class="card reveal{" is-current" if cur else ""}">'
+            f'<li class="reveal{" is-current" if cur else ""}">'
             + (f'<span class="tl__period">{esc(period)}</span>' if period else "")
             + f'<strong>{esc(x)}</strong><span>{esc(y)}</span></li>'
             for x, y, period, cur in items)
     car = t["career"]
-    glance = "".join(f'<li class="card reveal"><strong>{esc(v)}</strong><span>{esc(lbl)}</span></li>' for v, lbl in
+    glance = "".join(f'<li class="reveal"><strong>{esc(v)}</strong><span>{esc(lbl)}</span></li>' for v, lbl in
                      [(car[4][2], car[4][0]), (car[5][2], car[5][0]), (t["langs_v"], t["langs_k"])])
     tags = "".join(f"<li>{esc(x)}</li>" for x in t["tags"])
     seminars = next(f for f in D["leistungen"]["fields"] if f["id"] == "training")["tags"]
@@ -515,7 +501,7 @@ def render_case_studies(lang, t):
         out += f"""
     <section class="section section--soft">
       <div class="container">
-        <div class="section__head reveal"><p class="eyebrow">{esc(t['cases_eyebrow'])}</p><h2 class="h2">{esc(t['cases_h2'])}</h2></div>
+        <div class="section__head reveal"><h2 class="h2">{esc(t['cases_h2'])}</h2></div>
         <ul class="case-list" data-stagger>{cards}</ul>
       </div>
     </section>"""
@@ -526,7 +512,7 @@ def render_case_studies(lang, t):
         out += f"""
     <section class="section">
       <div class="container">
-        <div class="section__head reveal"><p class="eyebrow">{esc(t['quotes_eyebrow'])}</p><h2 class="h2">{esc(t['quotes_h2'])}</h2></div>
+        <div class="section__head reveal"><h2 class="h2">{esc(t['quotes_h2'])}</h2></div>
         <ul class="quote-list" data-stagger>{quotes}</ul>
       </div>
     </section>"""
@@ -585,7 +571,6 @@ def world_map(lang, t):
     <section class="section wmap-section" aria-labelledby="wmap-h">
       <div class="container">
         <div class="section__head reveal">
-          <p class="eyebrow">{esc(t['map_eyebrow'])}</p>
           <h2 class="h2" id="wmap-h">{em(t['map_h2'])}</h2>
           <p class="lead">{esc(t['map_lead'])}</p>
         </div>
@@ -613,7 +598,7 @@ def page_referenzen(lang):
     k, D = "referenzen", LANGS[lang]
     t = D["referenzen"]
     cards = "".join(
-        f'<li class="card reveal"><h3>{esc(h)}</h3><p>{esc(p)}</p></li>'
+        f'<li class="reveal"><h3>{esc(h)}</h3><p>{esc(p)}</p></li>'
         for h, p in t["items"])
     groups = []
     for g in REF_GROUP_ORDER:
@@ -625,7 +610,7 @@ def page_referenzen(lang):
 
     <section class="section section--flush">
       <div class="container">
-        <p class="eyebrow reveal">{esc(t['focus_h'])}</p>
+        <h2 class="h2 focus-h reveal">{esc(t['focus_h'])}</h2>
         <ul class="focus" data-stagger>{cards}</ul>
       </div>
     </section>
@@ -633,7 +618,6 @@ def page_referenzen(lang):
     <section class="section section--paper2">
       <div class="container">
         <div class="section__head reveal">
-          <p class="eyebrow">{esc(t['e2'])}</p>
           <h2 class="h2">{esc(t['h2'])}</h2>
         </div>
         {"".join(groups)}
@@ -698,7 +682,8 @@ def page_kontakt(lang):
 
         <aside class="contact-info reveal" aria-label="{esc(t['info'])}">
           <p class="name">Stolz Consulting</p>
-          <p class="role">Mag. Dr. Sabine Stolz, MSc · {esc(t['role'])}</p>
+          <p class="role">Mag. Dr. Sabine Stolz, MSc</p>
+          <p class="role">{esc(t['role'])}</p>
           <ul>
             <li><span class="k">{esc(u['phone'])}</span><a href="{c['phone_href']}">{esc(u['phone_display'])}</a></li>
             <li><span class="k">{esc(u['email'])}</span><a href="mailto:{c['email']}">{c['email']}</a></li>
@@ -730,7 +715,7 @@ def page_impressum(lang):
     D = LANGS[lang]
     t, u, c = D["impressum"], D["ui"], CONTACT
     todo = "".join(f'<dt>{esc(lbl)}</dt><dd>{legal_text("[BITTE ERGÄNZEN]")}</dd>' for lbl in t["todo_rows"])
-    return page_hero(t, lead=False) + f"""
+    return page_hero(t, lead=False, plain=True) + f"""
     <section class="section">
       <div class="container container--narrow legal">
         <h2>{esc(t['h_info'])}</h2>
@@ -751,7 +736,7 @@ def page_datenschutz(lang):
     # und lokal gehosteten Schriften beschreiben den technischen Ist-Stand; der Hosting-Anbieter fehlt noch.
     D = LANGS[lang]
     t, u, c = D["datenschutz"], D["ui"], CONTACT
-    return page_hero(t, lead=False) + f"""
+    return page_hero(t, lead=False, plain=True) + f"""
     <section class="section">
       <div class="container container--narrow legal">
         <h2>{esc(t['h_ctrl'])}</h2>
@@ -879,17 +864,19 @@ def layout(key, lang, body):
   <meta property="og:image" content="{DOMAIN}/assets/img/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="624">
-  <meta property="og:image:alt" content="Stolz Consulting – Mag. Dr. Sabine Stolz, MSc">
+  <meta property="og:image:alt" content="Stolz Consulting, Mag. Dr. Sabine Stolz, MSc">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{t_}">
   <meta name="twitter:description" content="{d_}">
   <meta name="twitter:image" content="{DOMAIN}/assets/img/og-image.jpg">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#fbf9f5">
   <link rel="icon" type="image/svg+xml" href="{a('img/favicon.svg')}">
   <link rel="apple-touch-icon" href="{a('img/apple-touch-icon.png')}">
   <link rel="manifest" href="{asset(key, lang, '')[:-len('assets/')]}site.webmanifest">
   {font_preloads(key, lang)}
   <link rel="stylesheet" href="{a('css/fonts.css')}">
+  <link rel="stylesheet" href="{a('css/tokens.css')}">
+  <link rel="stylesheet" href="{a('css/base.css')}">
   <link rel="stylesheet" href="{a('css/style.css')}">{extra_css}
   <script>document.documentElement.classList.add("js")</script>{ld}
 </head>
@@ -923,8 +910,8 @@ def layout(key, lang, body):
     <div class="container">
       <div class="site-footer__top">
         <div class="site-footer__claim">
-          <p class="kicker">{esc(u['footer_kicker'])}</p>
-          <p class="h2">{esc(u['footer_claim'])}</p>
+          <p class="site-footer__mark">{esc(u['footer_kicker'])}</p>
+          <p>{esc(u['footer_claim'])}</p>
         </div>
         <div class="site-footer__contact">
           <div><span class="k">{esc(u['phone'])}</span><a href="{c['phone_href']}">{esc(u['phone_display'])}</a></div>
@@ -933,7 +920,7 @@ def layout(key, lang, body):
         </div>
       </div>
       <div class="site-footer__bottom">
-        <span>© <span data-year>2026</span> Stolz Consulting · Mag. Dr. Sabine Stolz, MSc</span>
+        <span>© <span data-year>2026</span> Stolz Consulting, Mag. Dr. Sabine Stolz, MSc</span>
         <nav class="site-footer__links" aria-label="{esc(u['footer_nav'])}">
           <a href="{L('impressum')}">{esc(u['imprint'])}</a>
           <a href="{L('datenschutz')}">{esc(u['privacy'])}</a>
@@ -978,7 +965,7 @@ NOT_FOUND = {  # 404-Seite: sprachneutral, alle vier Sprachen untereinander (Hau
 
 def write_404():
     blocks = "".join(
-        f'<div class="nf__item card" lang="{c}"><h2 class="h3">{esc(v[0])}</h2><p>{esc(v[1])}</p>'
+        f'<div class="nf__item" lang="{c}"><h2 class="h3">{esc(v[0])}</h2><p>{esc(v[1])}</p>'
         f'<a class="btn {"btn--primary" if c == "de" else "btn--outline"}" href="{v[3]}"><span>{esc(v[2])}</span>{ARROW}</a></div>'
         for c, v in NOT_FOUND.items())
     pre = "\n  ".join(
@@ -989,12 +976,15 @@ def write_404():
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>404 – Stolz Consulting</title>
+  <title>404: Seite nicht gefunden, Stolz Consulting</title>
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Seite nicht gefunden. Page not found. Page introuvable. Страница не найдена.">
+  <meta name="theme-color" content="#fbf9f5">
   <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
   {pre}
   <link rel="stylesheet" href="/assets/css/fonts.css">
+  <link rel="stylesheet" href="/assets/css/tokens.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body class="page-404">
@@ -1005,10 +995,9 @@ def write_404():
     </div>
   </header>
   <main id="main" tabindex="-1">
-    <section class="page-hero">
+    <section class="page-hero page-hero--plain">
       <div class="container">
-        <p class="eyebrow">404</p>
-        <h1 class="h1">Seite nicht gefunden · Page not found</h1>
+        <h1 class="h1">404: Seite nicht gefunden, page not found</h1>
       </div>
     </section>
     <section class="section">
@@ -1016,7 +1005,7 @@ def write_404():
     </section>
   </main>
   <footer class="site-footer"><div class="container"><div class="site-footer__bottom">
-    <span>© Stolz Consulting · Mag. Dr. Sabine Stolz, MSc</span>
+    <span>© Stolz Consulting, Mag. Dr. Sabine Stolz, MSc</span>
     <nav class="site-footer__links" aria-label="Sprachen / Languages"><a href="/" lang="de" hreflang="de">Deutsch</a><a href="/en/" lang="en" hreflang="en">English</a><a href="/fr/" lang="fr" hreflang="fr">Français</a><a href="/ru/" lang="ru" hreflang="ru">Русский</a></nav>
   </div></div></footer>
 </body>
