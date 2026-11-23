@@ -28,8 +28,7 @@ build.py              Seitengenerator: HTML-Templates, Layout, hreflang, Sitemap
 i18n/                 Texte – eine Datei je Sprache (de.py, en.py, fr.py, ru.py)
 contact.php           Handler für das Kontaktformular (versendet per PHP mail())
 assets/css/fonts.css  lokale @font-face-Regeln (Inter, Source Serif 4; latin, latin-ext, cyrillic)
-assets/css/tokens.css Design-Tokens (Farben, Schriften, Skalen); base.css Basisregeln
-assets/css/style.css  Stylesheet (Komponenten, Motion, Responsive)
+assets/css/style.css  Stylesheet (Tokens, Komponenten, Motion, Responsive)
 mapdata.py            Kartengeometrie (erzeugt von tools/make_map.py, nicht von Hand bearbeiten)
 tools/make_map.py     erzeugt mapdata.py aus Natural-Earth-Daten
 assets/css/map.css, assets/js/map.js   Weltkarte (nur auf der Referenzseite geladen)
@@ -55,7 +54,7 @@ Es werden keine Zusatzpakete benötigt (nur Python 3).
 ## Texte und Sprachen
 
 - Texte stehen ausschließlich in `i18n/<sprache>.py` (ein `DATA`-Dictionary je Sprache).
-  `*Wort*` in Überschriften bleibt als Auszeichnung im Text erlaubt, wird aber als normaler Text ausgegeben.
+  `*Wort*` in Überschriften wird zu kursivem Gold-Akzent (unterstrichen).
 - **Neue Sprache:** `i18n/xx.py` nach dem Muster von `de.py` anlegen, in `i18n/__init__.py`
   in `LANGUAGES` eintragen, bauen. hreflang, Sitemap und Umschalter folgen automatisch.
 - Französische Typografie (geschützte Leerzeichen vor `? ! : ;`) setzt `build.py` automatisch.
@@ -145,25 +144,36 @@ Noch offen: Mailversand auf dem Zielserver testen (`contact.php` wurde lokal nic
 
 ## Design und Technik
 
-Designsystem „Ledger“ (Hallmark-Redesign, `design.md`): die Farbwelt der ursprünglichen Website (Weiß, ein Beige, Gold, warmes Dunkelbraun),
-neu komponiert. Alle Tokens in `assets/css/tokens.css`, Basisregeln in `assets/css/base.css`, Seitenstile in `assets/css/style.css`
-(die ersten Zeilen sind der Hallmark-Stempel mit Waivern).
+Designsystem „Weiß · Beige · Gold“ (Farbwelt der ursprünglichen Website; Tokens oben in `assets/css/style.css`):
 
-- **Farben:** Grund `#fbf9f5`, Beige `#f5f1ea` (Wechselflächen, Footer), dunkleres Beige `#e9dfcd` (Chips), Gold `#b88b4a` (Flächen, Linien),
-  `#8f6934` (Hover, große Zahlen), `#7a5727` (Gold als Text), Dunkelbraun `#2a2118` (Text, Schlussband). Keine Verläufe, keine Glanzeffekte.
-  Alte Tokennamen (`--gold`, `--paper`, `--ink` …) bleiben als Aliase für `analyse.css` und `map.css`.
-- **Komposition:** Hero mit Porträt rechts, Kennzahlen als Hauptbuch (eine Zeile je belegter Zahl), Leistungen als nummeriertes Register,
-  Vorgehen in drei Spalten, Kurzprofil mit großem Zitat, Referenzen-Laufband, dunkles Schlussband mit der einen Handlung.
-  Keine Eyebrows, keine kursiven Wörter in Überschriften (`*Wort*` in den Texten wird als normaler Text ausgegeben), keine Pfeile an Links.
-- **Buttons:** ein einziger Primärstil (flaches Gold), Sekundär als Textlink oder Outline; kein Lift, kein Glanz, kein Magnet-Effekt.
-- **Porträt:** Klasse `.frame`, Format 5:6, feine versetzte Goldlinie.
-- **Schriften:** Source Serif 4 (Überschriften, Gewicht 400) und Inter (Text), lokal gehostet (`assets/fonts/`, Kyrillisch für RU), keine Verbindung zu Google Fonts.
-- **Umbrüche:** keine automatische Silbentrennung, `text-wrap: balance` bzw. `pretty`, `clamp()`-Schriftgrößen.
-- **Bewegung:** nur kurzes, leises Einblenden (Intersection Observer), Fortschrittslinie, View Transitions als Progressive Enhancement.
-  `prefers-reduced-motion` schaltet alles ab; ohne JavaScript bleiben alle Inhalte sichtbar.
-- **CSP:** keine Inline-Styles im HTML (`style-src 'self'`); das Inline-Skript im `<head>` ist unverändert (Hash in `.htaccess`).
-- Barrierefreiheit: Skip-Link, Landmarks, sichtbare Fokus-Stile, Pfeiltasten im Sprachumschalter, Menü als natives Popover,
-  Logo-Laufband pausiert bei Hover und Fokus und steht bei `prefers-reduced-motion` still, Akkordeons nativ per Tastatur bedienbar.
+- **Farben:** Weiß `#ffffff` (Grund) und **ein** Beige `#f5f1ea` (Wechselflächen, Karten auf Weiß, Footer, Eingabefelder; die Tokens
+  `--paper-2` und `--sand` sind nur Aliase darauf). Gold `#b88b4a` ist die Hauptakzentfarbe (Buttons, Linien, Icons), tieferes Gold `#8f6934`
+  (große Zahlen), Gold als Text `#7a5727`; Text/aktive Elemente warmes Dunkelbraun `#2a2118`, Muted `#5f594c`.
+  Chips (Fachtags, Qualifikationen, Seminarthemen): etwas dunkleres Beige `#e9dfcd` (`--chip`) mit feiner Goldlinie und Dunkelbraun-Text. Kein Grün in der Website.
+  Hintergründe wechseln Weiß → Beige; Heroes laufen sehr weich von Beige nach Weiß (nur helle Töne, nie dunkel/Gold-Verläufe).
+  Der Footer ist eine flache beige Fläche. Kontraste (WCAG AA): Text/Weiß ≈ 15,8:1, Muted/Beige ≈ 6,2:1, Gold-Text/Weiß ≈ 6,5:1
+  (Beige ≈ 5,8:1), Button dunkel/Gold ≈ 5,7:1, Chip-Text Braun/`#e9dfcd` ≈ 11:1. Favicon, Touch-Icons, Manifest und `og-image.jpg` folgen der Palette.
+- **Buttons:** runde Pillen; Primär in Gold (heller Gold-Verlauf, dunkler Text) mit Lift, Glanzstreifen, wanderndem Pfeil und leichtem
+  Magnet-Effekt (nur Maus), Sekundär als Linie mit dunkler Füllung beim Hover; gilt auch für den schwebenden Orientierungs-Button.
+  `prefers-reduced-motion` schaltet Lift, Glanz und Magnet ab.
+- **Porträt:** überall dieselbe Klasse `.frame` (abgerundetes Rechteck, Radius 14 px, versetzte Goldlinie), Format 5:6 (`aspect-ratio`, `object-position: 50% 12%`, `width/height` 313×376 am `<img>`).
+- **Schriften:** Source Serif 4 (Überschriften, Gewicht 500) und Inter (Text) – **lokal gehostet** (`assets/fonts/`,
+  `font-display: swap`, Preload je Sprache, Kyrillisch für RU). Keine Verbindung zu Google Fonts.
+- **Prinzipien:** ruhig und viel Weißraum, flache Karten (Radius 16 px, 1-px-Linie), runde Buttons, Serif-Überschriften im Gewicht 400,
+  ein Hero je Startseite, Details in Akkordeons (`<details>`),
+  Prozess-Diagramm in 3 Schritten, nur belegte Kennzahlen, keine erfundenen Inhalte. **Icons nur sparsam:** eigene Inline-SVG-Icons
+  (`SERVICE_ICONS` in `build.py`) nur bei den Leistungskarten; Referenz-Schwerpunkte (Nummern), Ausbildung (Haarlinien),
+  Kontaktdaten (Beschriftung) und Listenpunkte (feine Goldlinie) kommen ohne Icons aus.
+- **Umbrüche:** keine automatische Silbentrennung (`hyphens: manual`, kein `&shy;` im Einsatz), `overflow-wrap: normal`
+  (nur Mail-/Telefonlinks dürfen notfalls umbrechen), `text-wrap: balance` (Überschriften, Buttons) bzw. `pretty` (Text),
+  `clamp()`-Schriftgrößen, ab 380 px etwas kleinere Überschriften (lange Wörter in RU). Prüfung per Skript: Wörter, die über
+  Zeilen umbrechen, und horizontaler Überlauf bei 320/375/768/1024/1440 px auf allen 28 Seiten + 404 – keine Funde.
+- **Bewegung:** nur kurzes, leises Einblenden (0,6 s, 12 px) per Intersection Observer, Fortschrittslinie, View Transitions als
+  Progressive Enhancement; Buttons mit dezentem Hover (1 px). `prefers-reduced-motion` schaltet alles ab. Ohne JavaScript bleiben
+  alle Inhalte sichtbar. Anker auf der Leistungsseite (`#erp` …) öffnen das passende Akkordeon; standardmäßig sind alle Punkte zugeklappt, ein sanfter Gold-Ring am Chevron-Button „atmet“ 4× (CSS, endet bei erster Bedienung; aus bei `prefers-reduced-motion`).
+- **CSP:** keine Inline-Styles im HTML (`style-src 'self'`); Abstände über Klassen.
+- Barrierefreiheit: Skip-Link, Landmarks, sichtbare Fokus-Stile, Pfeiltasten im Sprachumschalter, Menü mit Fokusfalle und Esc,
+  Logo-Laufband pausiert bei Hover und steht bei `prefers-reduced-motion` still (Logos in Originalfarbe), Akkordeons nativ per Tastatur bedienbar.
 
 ## Veröffentlichen
 

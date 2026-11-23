@@ -40,62 +40,41 @@
     });
   }
 
-  /* ---------- Navigation: eine <nav> für beide Layouts ----------
-     Schmal: natives Popover (popover="auto", Button mit popovertarget). Der Browser übernimmt
-     Öffnen/Schließen, ESC, Klick daneben, aria-expanded und die Fokus-Rückgabe an den Button.
-     Breit: popover-Attribut entfernt, die Liste steht normal in der Kopfzeile.
-     Ohne Popover-API (ältere Browser): kleiner Fallback mit der Klasse ":popover-open". */
+  /* ---------- Mobile Navigation ---------- */
   var toggle = document.querySelector(".nav-toggle");
   var nav = document.getElementById("nav");
+  function setNav(open) {
+    document.body.classList.toggle("nav-open", open);
+    if (!toggle) return;
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    toggle.setAttribute("aria-label", toggle.getAttribute(open ? "data-label-close" : "data-label-open"));
+  }
   if (toggle && nav) {
-    var narrow = window.matchMedia("(max-width: 900px)");
-    var native = Object.prototype.hasOwnProperty.call(HTMLElement.prototype, "popover");
-    var isNavOpen = function () { return native ? nav.matches(":popover-open") : nav.classList.contains(":popover-open"); };
-
-    var sync = function (open) {
-      document.body.classList.toggle("nav-open", open);
-      toggle.setAttribute("aria-label", toggle.getAttribute(open ? "data-label-close" : "data-label-open"));
-      if (!native) toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    toggle.addEventListener("click", function () {
+      var open = !document.body.classList.contains("nav-open");
+      setNav(open);
       if (open) {
         var first = nav.querySelector("a");
-        if (first) first.focus({ preventScroll: true });
+        if (first) window.setTimeout(function () { first.focus({ preventScroll: true }); }, 350);
       }
-    };
-    var closeNav = function () {
-      if (!isNavOpen()) return;
-      if (native) nav.hidePopover();
-      else { nav.classList.remove(":popover-open"); sync(false); }
-    };
-
-    /* Popover nur im schmalen Layout (setAttribute statt .popover, s. Leitfaden) */
-    var setLayout = function () {
-      if (narrow.matches) { if (native) nav.setAttribute("popover", "auto"); }
-      else { closeNav(); nav.removeAttribute("popover"); }
-    };
-    setLayout();
-    narrow.addEventListener("change", setLayout);
-
-    if (native) {
-      nav.addEventListener("toggle", function (e) { sync(e.newState === "open"); });
-    } else {
-      toggle.setAttribute("aria-expanded", "false");
-      toggle.addEventListener("click", function () {
-        var open = !isNavOpen();
-        nav.classList.toggle(":popover-open", open);
-        sync(open);
-      });
-      document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" && isNavOpen()) { closeNav(); toggle.focus(); }
-      });
-    }
-
-    nav.querySelectorAll("a").forEach(function (a) { a.addEventListener("click", closeNav); });
-    /* Fokus verlässt das Vollbild-Menü (Tab nach dem letzten Link): schließen, statt in
-       verdeckte Seiteninhalte zu springen */
-    nav.addEventListener("focusout", function (e) {
-      var to = e.relatedTarget;
-      if (to && to !== toggle && !nav.contains(to)) closeNav();
     });
+    nav.querySelectorAll("a").forEach(function (a) {
+      a.addEventListener("click", function () { setNav(false); });
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && document.body.classList.contains("nav-open")) {
+        setNav(false);
+        toggle.focus();
+      }
+      /* Fokus im geöffneten Menü halten */
+      if (e.key === "Tab" && document.body.classList.contains("nav-open")) {
+        var f = [toggle].concat(Array.prototype.slice.call(nav.querySelectorAll("a")));
+        var i = f.indexOf(document.activeElement);
+        if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+        else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
+      }
+    });
+    window.matchMedia("(min-width: 901px)").addEventListener("change", function (m) { if (m.matches) setNav(false); });
   }
 
   /* ---------- Sprachumschalter: Pfeiltasten, Pos1/Ende ---------- */
@@ -164,6 +143,21 @@
     accList.addEventListener("click", touched, { once: true });
     accList.addEventListener("toggle", touched, true);
     if (accList.querySelector(".acc[open]")) touched();
+  }
+
+  /* ---------- Magnetische Buttons (nur Maus, nur ohne Reduced Motion) ---------- */
+  if (window.matchMedia("(pointer: fine)").matches && !reduce.matches) {
+    document.querySelectorAll(".btn--primary, .btn--outline").forEach(function (b) {
+      b.addEventListener("pointermove", function (e) {
+        var r = b.getBoundingClientRect();
+        b.style.setProperty("--mx", ((e.clientX - r.left - r.width / 2) * 0.12).toFixed(1) + "px");
+        b.style.setProperty("--my", ((e.clientY - r.top - r.height / 2) * 0.2).toFixed(1) + "px");
+      });
+      b.addEventListener("pointerleave", function () {
+        b.style.setProperty("--mx", "0px");
+        b.style.setProperty("--my", "0px");
+      });
+    });
   }
 
   onScroll();

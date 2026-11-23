@@ -28,7 +28,7 @@
   var KEY_SESSION = "sc-analyse-shown", KEY_CLOSED = "sc-analyse-closed";
   var doc = document.documentElement;
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var ARROW = ""; /* Buttons tragen keine Pfeile mehr (Hallmark) */
+  var ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
   /* ---------- Storage (kann blockiert sein -> immer try/catch) ---------- */
   function store(kind, op, key, val) {
@@ -60,9 +60,8 @@
   }
 
   /* ---------- Zustand ---------- */
-  var state, dlg, headTitleId = "analyse-title";
-  function isOpen() { return !!(dlg && dlg.open); }
-  var built = false, bodyEl, stepText, bar, xBtn;
+  var state, dlg, root, headTitleId = "analyse-title", lastFocus = null, isOpen = false, closeTimer = null;
+  var inerted = [], built = false, bodyEl, stepText, bar, xBtn;
   function resetState() {
     state = { step: 1, topics: [], phase: "", size: "", contact: { name: "", email: "", phone: "", message: "", consent: false },
               view: "form", status: "" };
@@ -76,13 +75,14 @@
     return topicById(chosen[0]);
   }
 
-  /* ---------- Aufbau des Dialogs (einmalig) ----------
-     Natives <dialog> mit showModal(): Der Browser übernimmt inerte Seite, Fokusfalle, Top-Layer,
-     ::backdrop, ESC/Zurück-Geste und die Fokus-Rückgabe an den Auslöser. */
+  /* ---------- Aufbau des Dialogs (einmalig) ---------- */
   function build() {
     if (built) return;
     built = true;
-    dlg = attr(el("dialog", "analyse__dialog"), { "aria-labelledby": headTitleId, closedby: "any" });
+    root = el("div", "analyse"); root.hidden = true;
+    var backdrop = el("div", "analyse__backdrop");
+    backdrop.addEventListener("click", function () { close(); });
+    dlg = attr(el("div", "analyse__dialog"), { role: "dialog", "aria-modal": "true", "aria-labelledby": headTitleId, tabindex: "-1" });
 
     xBtn = attr(el("button", "analyse__x"), { type: "button", "aria-label": T.close });
     xBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>';
@@ -101,59 +101,78 @@
 
     bodyEl = el("div", "analyse__body");
     dlg.appendChild(xBtn); dlg.appendChild(head); dlg.appendChild(bodyEl);
-    document.body.appendChild(dlg);
+    root.appendChild(backdrop); root.appendChild(dlg);
+    document.body.appendChild(root);
 
-    /* ESC, Zurück-Geste und Klick neben den Dialog (closedby="any") laufen über "cancel":
-       abfangen, damit auch diese Wege die Ausblend-Animation zeigen. */
-    dlg.addEventListener("cancel", function (e) { e.preventDefault(); close(); });
-    /* "close" feuert bei jedem Schließen, auch wenn der Browser "cancel" nicht abbrechen lässt */
-    dlg.addEventListener("close", function () {
-      dlg.removeAttribute("data-closing");
-      if (dlg.open) return; /* vor dem Ereignis schon wieder geöffnet */
-      store("localStorage", "set", KEY_CLOSED, String(Date.now())); /* 14 Tage keine automatische Anzeige */
-    });
-
-    /* Klick neben den Dialog ohne closedby-Unterstützung (Safari): Drücken UND Loslassen außerhalb
-       der Dialogfläche, damit ein Markier-Zug, der auf dem Hintergrund endet, nicht schließt. */
-    if (!("closedBy" in HTMLDialogElement.prototype)) {
-      var outside = function (e) {
-        var r = dlg.getBoundingClientRect();
-        return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
-      };
-      var pressedOutside = false;
-      dlg.addEventListener("pointerdown", function (e) { pressedOutside = outside(e); });
-      dlg.addEventListener("pointerup", function (e) { if (pressedOutside && outside(e)) close(); });
-    }
+    dlg.addEventListener("keydown", onDialogKey);
   }
 
+  /* ---------- Fokusfalle, ESC ---------- */
+  function focusables() {
+    var list = dlg.querySelectorAll("a[href], button:not([disabled]), input:not([disabled]):not([tabindex='-1']), textarea:not([disabled]), [tabindex='0']");
+    return Array.prototype.filter.call(list, function (n) { return n.offsetParent !== null || n === document.activeElement; });
+  }
+  function onDialogKey(e) {
+    if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(); return; }
+    if (e.key !== "Tab") return;
+    var f = focusables();
+    if (!f.length) { e.preventDefault(); return; }
+    var first = f[0], last = f[f.length - 1], a = document.activeElement;
+    if (e.shiftKey && (a === first || a === dlg)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+    else if (!dlg.contains(a)) { e.preventDefault(); first.focus(); }
+  }
+  document.addEventListener("keydown", function (e) { /* ESC auch, wenn der Fokus einmal außerhalb liegt */
+    if (isOpen && e.key === "Escape" && !dlg.contains(document.activeElement)) close();
+  });
+
   /* ---------- Öffnen / Schließen ---------- */
-  function open() {
-    if (isOpen() && !dlg.hasAttribute("data-closing")) return;
+  function lockPage() {
+    var sbw = window.innerWidth - doc.clientWidth;
+    doc.style.setProperty("--analyse-sbw", Math.max(0, sbw) + "px");
+    doc.classList.add("analyse-lock");
+    Array.prototype.forEach.call(document.body.children, function (n) {
+      if (n === root || n.tagName === "SCRIPT" || n.hasAttribute("inert")) return;
+      n.setAttribute("inert", ""); inerted.push(n);
+    });
+  }
+  function unlockPage() {
+    doc.classList.remove("analyse-lock");
+    inerted.forEach(function (n) { n.removeAttribute("inert"); });
+    inerted = [];
+  }
+
+  function open(trigger) {
+    if (isOpen) return;
     build();
+    clearTimeout(closeTimer);
+    lastFocus = trigger || (document.activeElement && document.activeElement !== document.body ? document.activeElement : document.querySelector("[data-analyse-open]"));
     store("sessionStorage", "set", KEY_SESSION, "1"); /* pro Besuch nur einmal automatisch */
+    isOpen = true;
     resetState();
     render(true);
-    dlg.removeAttribute("data-closing"); /* falls während des Ausblendens erneut geöffnet */
-    if (!dlg.open) dlg.showModal();
+    root.hidden = false;
+    lockPage();
+    void root.offsetWidth; /* Reflow, damit die Übergänge starten */
+    root.classList.add("is-open");
     focusStepHeading();
   }
 
-  /* Ausblenden: data-closing startet die CSS-Übergänge, der Dialog bleibt bis zu deren Ende im
-     Top-Layer und wird dann geschlossen. Funktioniert ohne CSS "overlay"/display-Übergänge. */
   function close() {
-    if (!isOpen() || dlg.hasAttribute("data-closing")) return;
-    dlg.setAttribute("data-closing", "");
-    var anims = dlg.getAnimations ? dlg.getAnimations({ subtree: true }) : [];
-    var finished = Promise.all(anims.map(function (a) { return a.finished.catch(function () {}); }));
-    Promise.race([finished, new Promise(function (r) { setTimeout(r, 600); })]).then(function () {
-      if (!dlg.hasAttribute("data-closing")) return; /* inzwischen wieder geöffnet */
-      dlg.close();
-    });
+    if (!isOpen) return;
+    isOpen = false;
+    store("localStorage", "set", KEY_CLOSED, String(Date.now())); /* 14 Tage keine automatische Anzeige */
+    root.classList.remove("is-open");
+    unlockPage();
+    var done = function () { root.hidden = true; };
+    if (reduce.matches) done(); else closeTimer = setTimeout(done, 320);
+    var back = lastFocus && document.contains(lastFocus) ? lastFocus : document.querySelector("[data-analyse-open]");
+    if (back && back.focus) back.focus();
   }
 
   function focusStepHeading() {
     var h = bodyEl.querySelector("[data-focus]");
-    (h || xBtn).focus({ preventScroll: true });
+    (h || dlg).focus({ preventScroll: true });
   }
 
   /* ---------- Rendering der Schritte ---------- */
@@ -469,7 +488,7 @@
   /* ---------- Auslöser ---------- */
   var autoDone = false;
   function eligible() {
-    return !autoDone && !isOpen() && !recentlyClosed() && !store("sessionStorage", "get", KEY_SESSION);
+    return !autoDone && !isOpen && !recentlyClosed() && !store("sessionStorage", "get", KEY_SESSION);
   }
   function tryAuto(retries) {
     if (!eligible()) return;
@@ -506,15 +525,15 @@
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
       e.preventDefault();
       stopWatching();
-      open();
+      open(b);
     });
   });
 
   function reset() { store("sessionStorage", "del", KEY_SESSION); store("localStorage", "del", KEY_CLOSED); autoDone = false; }
   window.StolzAnalyse = { open: function () { open(null); }, reset: reset, config: { delayMs: DELAY_MS, scrollRatio: SCROLL_RATIO, pauseDays: PAUSE_DAYS } };
 
-  var q = new URLSearchParams(window.location.search).get("analyse");
-  if (q === "reset") reset();
-  if (q === "now") { setTimeout(function () { open(null); }, 400); }
+  var q = window.location.search.match(/[?&]analyse=(\w+)/);
+  if (q && q[1] === "reset") reset();
+  if (q && q[1] === "now") { setTimeout(function () { open(null); }, 400); }
   else arm();
 })();
